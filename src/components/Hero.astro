@@ -1,0 +1,171 @@
+---
+import type { HeroData } from "../data/home";
+
+interface Props {
+	hero: HeroData;
+}
+
+const { hero } = Astro.props;
+const dots = Array.from({ length: hero.dotCount }, (_, i) => i);
+---
+
+<section class="hero section" aria-labelledby="hero-heading">
+	<div class="hero-graph" aria-hidden="true">
+		<svg
+			class="hero-graph-svg"
+			viewBox="0 0 520 160"
+			preserveAspectRatio="xMidYMid slice"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<!-- Deterministic graph: nodes + edges -->
+			<g stroke="var(--border-color)" stroke-width="1" fill="none" stroke-linecap="round">
+				<line x1="40" y1="45" x2="95" y2="28" />
+				<line x1="95" y1="28" x2="160" y2="52" />
+				<line x1="160" y1="52" x2="220" y2="35" />
+				<line x1="220" y1="35" x2="280" y2="58" />
+				<line x1="280" y1="58" x2="340" y2="40" />
+				<line x1="340" y1="40" x2="400" y2="62" />
+				<line x1="400" y1="62" x2="470" y2="48" />
+				<line x1="70" y1="95" x2="130" y2="78" />
+				<line x1="130" y1="78" x2="200" y2="102" />
+				<line x1="200" y1="102" x2="265" y2="88" />
+				<line x1="265" y1="88" x2="330" y2="108" />
+				<line x1="330" y1="108" x2="390" y2="92" />
+				<line x1="95" y1="28" x2="130" y2="78" />
+				<line x1="220" y1="35" x2="200" y2="102" />
+				<line x1="160" y1="52" x2="265" y2="88" />
+				<line x1="280" y1="58" x2="330" y2="108" />
+			</g>
+			<g fill="var(--text-color)">
+				<circle cx="40" cy="45" r="3.5" />
+				<circle cx="95" cy="28" r="3.5" />
+				<circle cx="160" cy="52" r="3.5" />
+				<circle cx="220" cy="35" r="3.5" />
+				<circle cx="280" cy="58" r="3.5" />
+				<circle cx="340" cy="40" r="3.5" />
+				<circle cx="400" cy="62" r="3.5" />
+				<circle cx="470" cy="48" r="3.5" />
+				<circle cx="70" cy="95" r="3.5" />
+				<circle cx="130" cy="78" r="3.5" />
+				<circle cx="200" cy="102" r="3.5" />
+				<circle cx="265" cy="88" r="3.5" />
+				<circle cx="330" cy="108" r="3.5" />
+				<circle cx="390" cy="92" r="3.5" />
+			</g>
+		</svg>
+	</div>
+
+	<div class="hero-inner">
+		<div class="avatar-ring" aria-hidden="true">
+			<svg viewBox="0 0 80 80" class="avatar-svg" xmlns="http://www.w3.org/2000/svg">
+				<circle cx="40" cy="40" r="36" fill="none" stroke="var(--text-color)" stroke-width="2.5" />
+				<circle cx="30" cy="32" r="3" fill="var(--text-color)" />
+				<circle cx="50" cy="32" r="3" fill="var(--text-color)" />
+				<path
+					d="M 28 48 Q 40 58 52 48"
+					fill="none"
+					stroke="var(--text-color)"
+					stroke-width="2.5"
+					stroke-linecap="round"
+				/>
+			</svg>
+		</div>
+
+		<h1 id="hero-heading" class="hero-name">
+			{hero.name}{" "}
+			<span class="hero-handle">({hero.handle})</span>
+		</h1>
+		<p class="hero-title">{hero.title}</p>
+		<div class="hero-dots" aria-hidden="true">
+			{dots.map(() => (
+				<span class="hero-dot" />
+			))}
+		</div>
+		<p class="hero-bio">{hero.bio}</p>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		text-align: center;
+		padding-top: var(--space-md);
+		padding-bottom: var(--space-lg);
+	}
+
+	.hero-graph {
+		position: absolute;
+		inset: 0 0 auto 0;
+		height: 9rem;
+		overflow: hidden;
+		pointer-events: none;
+		opacity: 0.9;
+	}
+
+	.hero-graph-svg {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+
+	.hero-inner {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding-top: 1.5rem;
+	}
+
+	.avatar-ring {
+		width: 5.5rem;
+		height: 5.5rem;
+		margin-bottom: var(--space-md);
+	}
+
+	.avatar-svg {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	.hero-name {
+		margin: 0 0 var(--space-xs);
+		font-size: 1.75rem;
+		font-weight: 400;
+		line-height: 1.2;
+	}
+
+	.hero-handle {
+		font-weight: 400;
+		opacity: 0.9;
+	}
+
+	.hero-title {
+		margin: 0 0 var(--space-md);
+		font-size: 1.15rem;
+		color: var(--text-muted-color);
+	}
+
+	.hero-dots {
+		display: flex;
+		gap: 0.45rem;
+		justify-content: center;
+		margin-bottom: var(--space-md);
+	}
+
+	.hero-dot {
+		width: 0.45rem;
+		height: 0.45rem;
+		border-radius: 50%;
+		border: 1.5px solid var(--text-color);
+		background: transparent;
+		display: inline-block;
+	}
+
+	.hero-bio {
+		margin: 0;
+		max-width: 28ch;
+		font-size: 1.05rem;
+	}
+</style>

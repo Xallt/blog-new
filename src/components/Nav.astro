@@ -1,0 +1,19 @@
+---
+import type { NavItem } from "../data/home";
+
+interface Props {
+	items: NavItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="nav" aria-label="Primary">
+	{
+		items.map((item) => (
+			<a class="bracketed" href={item.href}>
+				{item.label}
+			</a>
+		))
+	}
+</nav>

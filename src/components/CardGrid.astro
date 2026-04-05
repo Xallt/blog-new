@@ -1,0 +1,67 @@
+---
+import type { Card } from "../data/home";
+
+interface Props {
+	cards: Card[];
+}
+
+const { cards } = Astro.props;
+---
+
+<section class="section" aria-labelledby="cards-heading">
+	<h2 id="cards-heading" class="visually-hidden">Stuff</h2>
+	<div class="card-grid">
+		{
+			cards.map((card) => (
+				<article class="card">
+					<div class={`card-media card-media--${card.media.kind}`}>
+						{card.media.kind === "squiggle" && (
+							<svg viewBox="0 0 120 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+								<path
+									d="M4 28 Q 20 8 38 26 T 72 22 T 108 30"
+									fill="none"
+									stroke="var(--text-color)"
+									stroke-width="1.8"
+									stroke-linecap="round"
+								/>
+								<path
+									d="M8 38 Q 28 18 52 34 T 96 26 T 116 36"
+									fill="none"
+									stroke="var(--border-color)"
+									stroke-width="1.2"
+									stroke-linecap="round"
+								/>
+							</svg>
+						)}
+						{card.media.kind === "text" && <span>{card.media.text}</span>}
+						{card.media.kind === "avatar" && (
+							<div class="avatar-ring" aria-hidden="true">
+								<svg viewBox="0 0 80 80" class="avatar-svg" xmlns="http://www.w3.org/2000/svg">
+									<circle
+										cx="40"
+										cy="40"
+										r="36"
+										fill="none"
+										stroke="var(--text-color)"
+										stroke-width="2.5"
+									/>
+									<circle cx="30" cy="32" r="3" fill="var(--text-color)" />
+									<circle cx="50" cy="32" r="3" fill="var(--text-color)" />
+									<path
+										d="M 28 48 Q 40 58 52 48"
+										fill="none"
+										stroke="var(--text-color)"
+										stroke-width="2.5"
+										stroke-linecap="round"
+									/>
+								</svg>
+							</div>
+						)}
+					</div>
+					<h3 class="card-title">{card.title}</h3>
+					<p class="card-excerpt">{card.excerpt}</p>
+				</article>
+			))
+		}
+	</div>
+</section>
