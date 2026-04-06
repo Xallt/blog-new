@@ -1,60 +1,24 @@
 ---
-import type { HeroData } from "../data/home";
+import {
+type HeroData,
+type SocialLink,
+resolveSocialHref,
+socialLinkRel,
+} from "../data/home";
 
 interface Props {
 	hero: HeroData;
 }
 
 const { hero } = Astro.props;
-const dots = Array.from({ length: hero.dotCount }, (_, i) => i);
+
+const socialWithHref = hero.socialLinks
+	.map((link: SocialLink) => ({ link, href: resolveSocialHref(link) }))
+	.filter((item): item is { link: SocialLink; href: string } => item.href !== null);
 ---
 
 <section class="hero section" aria-labelledby="hero-heading">
-	<div class="hero-graph" aria-hidden="true">
-		<svg
-			class="hero-graph-svg"
-			viewBox="0 0 520 160"
-			preserveAspectRatio="xMidYMid slice"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<!-- Deterministic graph: nodes + edges -->
-			<g stroke="var(--border-color)" stroke-width="1" fill="none" stroke-linecap="round">
-				<line x1="40" y1="45" x2="95" y2="28" />
-				<line x1="95" y1="28" x2="160" y2="52" />
-				<line x1="160" y1="52" x2="220" y2="35" />
-				<line x1="220" y1="35" x2="280" y2="58" />
-				<line x1="280" y1="58" x2="340" y2="40" />
-				<line x1="340" y1="40" x2="400" y2="62" />
-				<line x1="400" y1="62" x2="470" y2="48" />
-				<line x1="70" y1="95" x2="130" y2="78" />
-				<line x1="130" y1="78" x2="200" y2="102" />
-				<line x1="200" y1="102" x2="265" y2="88" />
-				<line x1="265" y1="88" x2="330" y2="108" />
-				<line x1="330" y1="108" x2="390" y2="92" />
-				<line x1="95" y1="28" x2="130" y2="78" />
-				<line x1="220" y1="35" x2="200" y2="102" />
-				<line x1="160" y1="52" x2="265" y2="88" />
-				<line x1="280" y1="58" x2="330" y2="108" />
-			</g>
-			<g fill="var(--text-color)">
-				<circle cx="40" cy="45" r="3.5" />
-				<circle cx="95" cy="28" r="3.5" />
-				<circle cx="160" cy="52" r="3.5" />
-				<circle cx="220" cy="35" r="3.5" />
-				<circle cx="280" cy="58" r="3.5" />
-				<circle cx="340" cy="40" r="3.5" />
-				<circle cx="400" cy="62" r="3.5" />
-				<circle cx="470" cy="48" r="3.5" />
-				<circle cx="70" cy="95" r="3.5" />
-				<circle cx="130" cy="78" r="3.5" />
-				<circle cx="200" cy="102" r="3.5" />
-				<circle cx="265" cy="88" r="3.5" />
-				<circle cx="330" cy="108" r="3.5" />
-				<circle cx="390" cy="92" r="3.5" />
-			</g>
-		</svg>
-	</div>
-
+	
 	<div class="hero-inner">
 		<div class="avatar-ring" aria-hidden="true">
 			<svg viewBox="0 0 80 80" class="avatar-svg" xmlns="http://www.w3.org/2000/svg">
@@ -76,11 +40,19 @@ const dots = Array.from({ length: hero.dotCount }, (_, i) => i);
 			<span class="hero-handle">({hero.handle})</span>
 		</h1>
 		<p class="hero-title">{hero.title}</p>
-		<div class="hero-dots" aria-hidden="true">
-			{dots.map(() => (
-				<span class="hero-dot" />
+		<nav class="hero-social" aria-label="Social links">
+			{socialWithHref.map(({ link, href }) => (
+				<a
+					class="hero-social-link"
+					href={href}
+					aria-label={link.type}
+					target={link.noblank ? undefined : "_blank"}
+					rel={socialLinkRel(link)}
+				>
+					<i class:list={[link.icon, "hero-social-icon"]} aria-hidden="true" />
+				</a>
 			))}
-		</div>
+		</nav>
 		<p class="hero-bio">{hero.bio}</p>
 	</div>
 </section>
@@ -147,25 +119,45 @@ const dots = Array.from({ length: hero.dotCount }, (_, i) => i);
 		color: var(--text-muted-color);
 	}
 
-	.hero-dots {
+	.hero-social {
 		display: flex;
-		gap: 0.45rem;
+		flex-wrap: wrap;
+		gap: 0.65rem;
 		justify-content: center;
 		margin-bottom: var(--space-md);
 	}
 
-	.hero-dot {
-		width: 0.45rem;
-		height: 0.45rem;
+	.hero-social-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
 		border-radius: 50%;
-		border: 1.5px solid var(--text-color);
-		background: transparent;
-		display: inline-block;
+		border: 1.5px solid var(--border-color);
+		color: var(--text-muted-color);
+		text-decoration: none;
+		transition:
+			color 0.15s ease,
+			border-color 0.15s ease,
+			background 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.hero-social-link:hover {
+		color: var(--link-color);
+		border-color: var(--link-color);
+		background: color-mix(in srgb, var(--link-color) 12%, transparent);
+	}
+
+	.hero-social-icon {
+		font-size: 1.05rem;
+		line-height: 1;
 	}
 
 	.hero-bio {
 		margin: 0;
-		max-width: 28ch;
+		max-width: 80ch;
 		font-size: 1.05rem;
 	}
 </style>
