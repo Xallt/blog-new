@@ -1,9 +1,8 @@
 ---
 import {
-type HeroData,
-type SocialLink,
-resolveSocialHref,
-socialLinkRel,
+	type HeroData,
+	type SocialLink,
+	socialLinkRel,
 } from "../data/home";
 import WebNeko from "./webneko.html";
 
@@ -12,10 +11,6 @@ interface Props {
 }
 
 const { hero } = Astro.props;
-
-const socialWithHref = hero.socialLinks
-	.map((link: SocialLink) => ({ link, href: resolveSocialHref(link) }))
-	.filter((item): item is { link: SocialLink; href: string } => item.href !== null);
 ---
 
 <section class="hero section" aria-labelledby="hero-heading">
@@ -42,11 +37,11 @@ const socialWithHref = hero.socialLinks
 		</h1>
 		<p class="hero-title">{hero.title}</p>
 		<nav class="hero-social" aria-label="Social links">
-			{socialWithHref.map(({ link, href }) => (
+			{hero.socialLinks.map((link: SocialLink) => (
 				<a
 					class="hero-social-link"
-					href={href}
-					aria-label={link.type}
+					href={link.url}
+					aria-label={link.url}
 					target={link.noblank ? undefined : "_blank"}
 					rel={socialLinkRel(link)}
 				>
