@@ -5,6 +5,7 @@ type SocialLink,
 resolveSocialHref,
 socialLinkRel,
 } from "../data/home";
+import WebNeko from "./webneko.html";
 
 interface Props {
 	hero: HeroData;
@@ -36,8 +37,8 @@ const socialWithHref = hero.socialLinks
 		</div>
 
 		<h1 id="hero-heading" class="hero-name">
-			{hero.name}{" "}
-			<span class="hero-handle">({hero.handle})</span>
+			{hero.name}
+			{hero.neko && <WebNeko />}
 		</h1>
 		<p class="hero-title">{hero.title}</p>
 		<nav class="hero-social" aria-label="Social links">

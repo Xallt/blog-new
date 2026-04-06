@@ -1,0 +1,45 @@
+<script src="https://webneko.net/n20171213.js"></script>
+<a class="neko-button" id="nekoButton" onclick="anotherNeko('spirit')">ヽ🐱ゝ</a>
+
+<script>
+window.onload = null;
+function anotherNeko(type, bActive=true) {
+	const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+	const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+	
+	x = Math.floor(Math.random() * box.boundWidth()) + scrollX;
+	y = Math.floor(Math.random() * box.boundHeight()) + scrollY;
+	scat = new Neko(x, y, bActive, type);
+}
+</script>
+<style>
+.neko-button {
+    font-size: 1.0rem;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+
+    &:hover {
+        color: var(--link-color) !important;
+    }
+}
+.mirrored {
+    transform: scaleX(-1);
+}
+</style>
+
+ <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const nekoButton = document.getElementById('nekoButton');
+      let mirrored = false;
+
+      setInterval(() => {
+        mirrored = !mirrored;
+        if (mirrored) {
+          nekoButton.classList.add('mirrored');
+        } else {
+          nekoButton.classList.remove('mirrored');
+        }
+      }, 1000);
+    });
+  </script>

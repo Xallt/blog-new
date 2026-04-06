@@ -54,10 +54,10 @@ export function socialLinkRel(link: SocialLink): string | undefined {
 
 export interface HeroData {
 	name: string;
-	handle: string;
 	title: string;
 	bio: string;
 	socialLinks: SocialLink[];
+	neko: boolean
 }
 
 export interface Post {
@@ -88,7 +88,7 @@ export const navItems: NavItem[] = [
 
 export const hero: HeroData = {
 	name: "Dmitry Shabat",
-	handle: "neko",
+	neko: true,
 	title: "Computer Vision Engineer",
 	bio: "Enthusiastic about 3D Reconstruction, Computer Graphics, Math generally",
 	socialLinks: [
