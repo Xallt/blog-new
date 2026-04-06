@@ -65,3 +65,73 @@ const { cards } = Astro.props;
 		}
 	</div>
 </section>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+
+	.card-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: var(--space-md);
+	}
+
+	@media (max-width: 960px) {
+		.card-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 520px) {
+		.card-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.card {
+		border: 1px solid var(--border-color);
+		border-radius: 4px;
+		padding: var(--space-sm);
+		background: var(--surface-color);
+		display: flex;
+		flex-direction: column;
+		min-height: 8rem;
+	}
+
+	.card-media {
+		min-height: 3.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: var(--space-sm);
+		font-family: var(--font-family-base);
+		font-size: 0.7rem;
+		text-align: center;
+		color: var(--text-muted-color);
+	}
+
+	.card-media--squiggle svg {
+		width: 100%;
+		height: 3rem;
+	}
+
+	.card-media--avatar .avatar-ring {
+		width: 3.5rem;
+		height: 3.5rem;
+	}
+
+	.card-title {
+		margin: 0 0 var(--space-xs);
+		font-size: 1rem;
+		font-weight: 400;
+	}
+
+	.card-excerpt {
+		margin: 0;
+		font-family: var(--font-family-base);
+		font-size: 0.55rem;
+		line-height: 1.4;
+		color: var(--text-muted-color);
+	}
+</style>

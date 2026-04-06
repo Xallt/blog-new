@@ -36,3 +36,11 @@ const { title, description = "Dmitry Shabat — portfolio and writing" } = Astro
 		<slot />
 	</body>
 </html>
+
+<style is:global>
+	.page {
+		max-width: var(--max-width);
+		margin-inline: auto;
+		padding: var(--space-md) var(--space-sm) var(--space-xl);
+	}
+</style>

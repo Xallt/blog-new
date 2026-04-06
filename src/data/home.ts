@@ -1,3 +1,5 @@
+import type { PostSchema } from "../content.config";
+
 export interface NavItem {
 	label: string;
 	href: string;
@@ -32,6 +34,22 @@ export interface Post {
 	date: string;
 }
 
+function formatDisplayDate(d: Date): string {
+	const dd = String(d.getUTCDate()).padStart(2, "0");
+	const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+	const yyyy = d.getUTCFullYear();
+	return `${dd}.${mm}.${yyyy}`;
+}
+
+export function parsePost(post: PostSchema): Post {
+	return {
+		title: post.title,
+		tags: post.tags,
+		category: post.category,
+		date: formatDisplayDate(post.pubDate),
+	};
+}
+
 export type CardMedia =
 	| { kind: "squiggle" }
 	| { kind: "text"; text: string }
@@ -63,27 +81,6 @@ export const hero: HeroData = {
 		{ icon: "fas fa-envelope", url: "mailto:mitya.shabat@gmail.com", noblank: true },
 	],
 };
-
-export const posts: Post[] = [
-	{
-		title: "Post 1 — about fycking lalala lululu",
-		tags: ["math", "stuff", "idk"],
-		category: "Stuff1",
-		date: "25.02.2026",
-	},
-	{
-		title: "Post 2 — about something else idk",
-		tags: [],
-		category: "Stuff2",
-		date: "13.03.2027",
-	},
-	{
-		title: "Post 3 — and this one completely different",
-		tags: [],
-		category: "Stuff3",
-		date: "01.01.1970",
-	},
-];
 
 export const cards: Card[] = [
 	{

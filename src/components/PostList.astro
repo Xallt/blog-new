@@ -1,44 +1,28 @@
 ---
 import type { Post } from "../data/home";
-
+import PostCard from "./PostCard.astro";
 interface Props {
 	posts: Post[];
-	readMoreHref?: string;
-	readMoreLabel?: string;
 }
 
-const {
-	posts,
-	readMoreHref = "/posts",
-	readMoreLabel = "Read more",
-} = Astro.props;
+const { posts } = Astro.props;
 ---
 
 <section class="section" aria-labelledby="posts-heading">
 	<h2 id="posts-heading" class="visually-hidden">Recent posts</h2>
 	<div class="post-list">
-		{
-			posts.map((post) => (
-				<article class="post-row">
-					<div class="post-main">
-						<h3 class="post-title">{post.title}</h3>
-						{post.tags.length > 0 && (
-							<ul class="post-tags">
-								{post.tags.map((tag) => (
-									<li>{tag}</li>
-								))}
-							</ul>
-						)}
-					</div>
-					<div class="post-meta">
-						<span class="category">{post.category}</span>
-						<time>{post.date}</time>
-					</div>
-				</article>
-			))
-		}
+		{posts.map((post) => <PostCard post={post} />)}
 	</div>
-	<p class="read-more-wrap">
-		<a href={readMoreHref}>{readMoreLabel}</a>
-	</p>
 </section>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+
+	.post-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+</style>

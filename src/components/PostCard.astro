@@ -1,0 +1,95 @@
+---
+import type { Post } from "../data/home";
+
+interface Props {
+    post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<article class="post-row">
+    <div class="post-main">
+        <h3 class="post-title">{post.title}</h3>
+        {
+            post.tags.length > 0 && (
+                <ul class="post-tags">
+                    {post.tags.map((tag) => (
+                        <li>{tag}</li>
+                    ))}
+                </ul>
+            )
+        }
+    </div>
+    <div class="post-meta">
+        <span class="category">{post.category}</span>
+        <time>{post.date}</time>
+    </div>
+</article>
+
+<style>
+    .post-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--space-sm) var(--space-md);
+        align-items: baseline;
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .post-row:last-of-type {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .post-main {
+        min-width: 0;
+    }
+
+    .post-title {
+        margin: 0 0 var(--space-xs);
+        font-size: 1.15rem;
+        font-weight: 400;
+    }
+
+    .post-meta {
+        font-family: var(--font-family-base);
+        font-size: 0.65rem;
+        text-align: right;
+        white-space: nowrap;
+        color: var(--text-muted-color);
+    }
+
+    .post-meta .category {
+        display: block;
+        margin-bottom: 0.2em;
+    }
+
+    .post-tags {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.6rem;
+        font-family: var(--font-family-base);
+        font-size: 0.6rem;
+        color: var(--label-color);
+    }
+
+    .post-tags li::before {
+        content: "#";
+        opacity: 0.7;
+    }
+
+    @media (max-width: 520px) {
+        .post-row {
+            grid-template-columns: 1fr;
+        }
+
+        .post-meta {
+            text-align: left;
+            white-space: normal;
+        }
+    }
+</style>

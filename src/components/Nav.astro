@@ -17,3 +17,34 @@ const { items } = Astro.props;
 		))
 	}
 </nav>
+
+<style>
+	.nav {
+		font-family: var(--font-family-base);
+		font-size: 1rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--space-sm) var(--space-md);
+		margin-bottom: var(--space-lg);
+	}
+
+	.nav a {
+		text-decoration: none;
+	}
+
+	.nav a:hover {
+		text-decoration: underline;
+	}
+	.bracketed::before {
+		content: "<";
+		opacity: 0.85;
+	}
+
+	.bracketed::after {
+		content: ">";
+		opacity: 0.85;
+	}
+</style>

@@ -1,17 +1,25 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Nav from "../components/Nav.astro";
-import Hero from "../components/Hero.astro";
-import PostList from "../components/PostList.astro";
+import { getCollection } from "astro:content";
 import CardGrid from "../components/CardGrid.astro";
-import { navItems, hero, posts, cards } from "../data/home";
+import Hero from "../components/Hero.astro";
+import Nav from "../components/Nav.astro";
+import PostList from "../components/PostList.astro";
+import { cards, hero, navItems, parsePost, type Post } from "../data/home";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const allPosts = await getCollection("posts");
+
+const recentPosts: Post[] = [...allPosts]
+	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+	.slice(0, 3)
+	.map((entry) => parsePost(entry.data));
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">
 	<div class="page">
 		<Nav items={navItems} />
 		<Hero hero={hero} />
-		<PostList posts={posts} />
+		<PostList posts={recentPosts} />
 		<CardGrid cards={cards} />
 	</div>
 </BaseLayout>

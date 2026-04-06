@@ -1,9 +1,5 @@
 ---
-import {
-type HeroData,
-type SocialLink,
-socialLinkRel,
-} from "../data/home";
+import { type HeroData, type SocialLink, socialLinkRel } from "../data/home";
 import WebNeko from "./webneko.html";
 
 interface Props {
@@ -14,41 +10,54 @@ const { hero } = Astro.props;
 ---
 
 <section class="hero section" aria-labelledby="hero-heading">
-	
 	<div class="hero-inner">
 		<div class="avatar-ring" aria-hidden="true">
-			<svg viewBox="0 0 80 80" class="avatar-svg" xmlns="http://www.w3.org/2000/svg">
-				<circle cx="40" cy="40" r="36" fill="none" stroke="var(--text-color)" stroke-width="2.5" />
-				<circle cx="30" cy="32" r="3" fill="var(--text-color)" />
-				<circle cx="50" cy="32" r="3" fill="var(--text-color)" />
+			<svg
+				viewBox="0 0 80 80"
+				class="avatar-svg"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<circle
+					cx="40"
+					cy="40"
+					r="36"
+					fill="none"
+					stroke="var(--text-color)"
+					stroke-width="2.5"></circle>
+				<circle cx="30" cy="32" r="3" fill="var(--text-color)"></circle>
+				<circle cx="50" cy="32" r="3" fill="var(--text-color)"></circle>
 				<path
 					d="M 28 48 Q 40 58 52 48"
 					fill="none"
 					stroke="var(--text-color)"
 					stroke-width="2.5"
-					stroke-linecap="round"
-				/>
+					stroke-linecap="round"></path>
 			</svg>
 		</div>
 
 		<h1 id="hero-heading" class="hero-name">
 			{hero.name}
-			<br/>
+			<br />
 			{hero.neko && <WebNeko />}
 		</h1>
 		<p class="hero-title">{hero.title}</p>
 		<nav class="hero-social" aria-label="Social links">
-			{hero.socialLinks.map((link: SocialLink) => (
-				<a
-					class="hero-social-link"
-					href={link.url}
-					aria-label={link.url}
-					target={link.noblank ? undefined : "_blank"}
-					rel={socialLinkRel(link)}
-				>
-					<i class:list={[link.icon, "hero-social-icon"]} aria-hidden="true" />
-				</a>
-			))}
+			{
+				hero.socialLinks.map((link: SocialLink) => (
+					<a
+						class="hero-social-link"
+						href={link.url}
+						aria-label={link.url}
+						target={link.noblank ? undefined : "_blank"}
+						rel={socialLinkRel(link)}
+					>
+						<i
+							class:list={[link.icon, "hero-social-icon"]}
+							aria-hidden="true"
+						/>
+					</a>
+				))
+			}
 		</nav>
 		<p class="hero-bio">{hero.bio}</p>
 	</div>
@@ -60,6 +69,7 @@ const { hero } = Astro.props;
 		text-align: center;
 		padding-top: var(--space-md);
 		padding-bottom: var(--space-lg);
+		margin-bottom: var(--space-xl);
 	}
 
 	.hero-graph {
