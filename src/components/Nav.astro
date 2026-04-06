@@ -6,15 +6,40 @@ interface Props {
 }
 
 const { items } = Astro.props;
+
+function normalizePath(p: string): string {
+	if (p.length > 1 && p.endsWith("/")) {
+		return p.slice(0, -1);
+	}
+	return p;
+}
+
+function isNavActive(href: string, pathname: string): boolean {
+	const path = normalizePath(pathname);
+	const target = normalizePath(href);
+	if (target === "/") {
+		return path === "/" || path === "";
+	}
+	return path === target || path.startsWith(`${target}/`);
+}
+
+const pathname = Astro.url.pathname;
 ---
 
 <nav class="nav" aria-label="Primary">
 	{
-		items.map((item) => (
-			<a class="bracketed" href={item.href}>
-				{item.label}
-			</a>
-		))
+		items.map((item) => {
+			const active = isNavActive(item.href, pathname);
+			return (
+				<a
+					class:list={["bracketed", { "nav-link-active": active }]}
+					href={item.href}
+					aria-current={active ? "page" : undefined}
+				>
+					{item.label}
+				</a>
+			);
+		})
 	}
 </nav>
 
@@ -38,6 +63,18 @@ const { items } = Astro.props;
 	.nav a:hover {
 		text-decoration: underline;
 	}
+
+	.nav a.nav-link-active {
+		color: color-mix(in srgb, var(--link-color) 80%, rgb(255 255 255) 20%);
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.bracketed.nav-link-active::before,
+	.bracketed.nav-link-active::after {
+		opacity: 1;
+	}
+
 	.bracketed::before {
 		content: "<";
 		opacity: 0.85;
