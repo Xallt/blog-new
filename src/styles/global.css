@@ -11,7 +11,7 @@
 	--label-color: #a7a7a7;
 	--blockquote-border-color: rgb(66, 66, 66);
 	--blockquote-text-color: #868686;
-	--link-color: rgb(138, 180, 248);
+	--link-color: rgba(138, 180, 248, 0.82);
 	--max-width: 52rem;
 	--font-family-base: "Source Sans Pro", "Microsoft Yahei", sans-serif;
 	--font-family-heading: Lato, "Microsoft Yahei", sans-serif;
@@ -71,12 +71,15 @@ h6 {
 a {
 	color: var(--link-color);
 	text-decoration: underline;
-	text-decoration-thickness: 1px;
+	text-decoration-thickness: 0.5px;
 	text-underline-offset: 0.15em;
+	text-decoration-color: color-mix(in srgb, var(--link-color) 72%, transparent);
 }
 
 a:hover {
-	text-decoration-thickness: 2px;
+	color: rgba(138, 180, 248, 0.94);
+	text-decoration-thickness: 1px;
+	text-decoration-color: color-mix(in srgb, var(--link-color) 88%, transparent);
 }
 
 pre {
