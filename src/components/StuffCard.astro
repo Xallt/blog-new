@@ -1,0 +1,145 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import type { Stuff } from "../data/home";
+
+interface Props {
+	stuff: Stuff;
+}
+
+const { stuff } = Astro.props;
+
+/** Raster previews: optimized via `<Image />`. */
+const rasterImages = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/assets/**/*.{jpeg,jpg,png}",
+);
+/** GIFs as URLs so animation is preserved (Image would rasterize to WebP). */
+const gifUrls = import.meta.glob<string>("/src/assets/**/*.gif", {
+	import: "default",
+	query: "?url",
+});
+
+let imageMeta: ImageMetadata | null = null;
+let localGifSrc: string | null = null;
+
+if (stuff.image) {
+	const key = stuff.image.trim();
+	if (/\.gif$/i.test(key)) {
+		const load = gifUrls[key];
+		if (!load) {
+			throw new Error(
+				`"${key}" does not exist in glob "/src/assets/**/*.gif"`,
+			);
+		}
+		localGifSrc = await load();
+	} else {
+		const load = rasterImages[key];
+		if (!load) {
+			throw new Error(
+				`"${key}" does not exist in glob "/src/assets/**/*.{jpeg,jpg,png}"`,
+			);
+		}
+		imageMeta = (await load()).default;
+	}
+}
+---
+
+<a class="stuff-card" href={stuff.href}>
+	<div class="stuff-card-media">
+		{
+			localGifSrc && (
+				<img
+					src={localGifSrc}
+					alt={stuff.name}
+					class="stuff-card-img"
+					loading="lazy"
+				/>
+			)
+		}
+		{
+			imageMeta && (
+				<Image
+					src={imageMeta}
+					alt={stuff.name}
+					class="stuff-card-img"
+					loading="lazy"
+				/>
+			)
+		}
+	</div>
+	<h3 class="stuff-card-title">{stuff.name}</h3>
+	<p class="stuff-card-desc">{stuff.description}</p>
+</a>
+
+<style>
+	.stuff-card {
+		border: 1px solid var(--border-color);
+		border-radius: 4px;
+		padding: 0;
+		overflow: hidden;
+		background: var(--surface-color);
+		display: flex;
+		flex-direction: column;
+		min-height: 8rem;
+		text-decoration: none;
+		color: inherit;
+		transition:
+			border-color 0.15s ease,
+			background-color 0.15s ease;
+	}
+
+	.stuff-card:hover {
+		border-color: var(--text-muted-color);
+	}
+
+	.stuff-card:focus-visible {
+		outline: 2px solid var(--text-color);
+		outline-offset: 2px;
+	}
+
+	.stuff-card-media {
+		width: 100%;
+		height: 8rem;
+		overflow: hidden;
+		margin: 0;
+		position: relative;
+		font-family: var(--font-family-base);
+		text-align: center;
+		color: var(--text-muted-color);
+	}
+
+	/* No preview: drop the slot so text keeps normal insets */
+	.stuff-card-media:not(:has(img)) {
+		display: none;
+	}
+
+	.stuff-card-media--placeholder svg {
+		width: 100%;
+		height: 3rem;
+	}
+
+	/* Cover the media box; scale so the shorter axis fills, crop the rest from center. */
+	.stuff-card-media :global(.stuff-card-img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		display: block;
+	}
+
+	.stuff-card-title {
+		margin: 0 0 var(--space-xs);
+		padding: var(--space-sm) var(--space-sm) 0;
+		font-size: 1.3rem;
+		font-weight: 400;
+	}
+
+	.stuff-card-desc {
+		margin: 0;
+		padding: 0 var(--space-sm) var(--space-sm);
+		font-family: var(--font-family-base);
+		font-size: 1rem;
+		line-height: 1.4;
+		color: var(--text-muted-color);
+	}
+</style>

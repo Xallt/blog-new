@@ -1,0 +1,45 @@
+---
+import type { Stuff } from "../data/home";
+import StuffCard from "./StuffCard.astro";
+
+interface Props {
+	stuff: Stuff[];
+}
+
+const { stuff } = Astro.props;
+
+const withImages = stuff.filter((s) => s.image != null);
+const withoutImages = stuff.filter((s) => s.image == null);
+const orderedStuff = [...withImages, ...withoutImages];
+---
+
+<section class="section" aria-labelledby="stuff-heading">
+	<h2 id="stuff-heading" class="visually-hidden">Stuff</h2>
+	<div class="stuff-grid">
+		{orderedStuff.map((item) => <StuffCard stuff={item} />)}
+	</div>
+</section>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+
+	.stuff-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-md);
+	}
+
+	@media (max-width: 960px) {
+		.stuff-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 520px) {
+		.stuff-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

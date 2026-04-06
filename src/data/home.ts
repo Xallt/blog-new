@@ -50,15 +50,13 @@ export function parsePost(post: CollectionEntry<"posts">): Post {
 	};
 }
 
-export type CardMedia =
-	| { kind: "squiggle" }
-	| { kind: "text"; text: string }
-	| { kind: "avatar" };
-
-export interface Card {
-	media: CardMedia;
-	title: string;
-	excerpt: string;
+export interface Stuff {
+	name: string;
+	description: string;
+	/** Full URL, e.g. https://o3d.xallt.dev or https://xallt.dev/noise-texture-generator */
+	href: string;
+	/** Vite glob key: `/src/assets/...` (jpeg, jpg, png, or gif), or null */
+	image: string | null;
 }
 
 export const navItems: NavItem[] = [
@@ -82,25 +80,60 @@ export const hero: HeroData = {
 	],
 };
 
-export const cards: Card[] = [
+/** Listed services from site deploy config (`listed: true`), links on xallt.dev */
+export const stuff: Stuff[] = [
 	{
-		media: { kind: "squiggle" },
-		title: "Fun thing",
-		excerpt: "So what I did here is that I had a little experiment and it turned out interesting.",
+		name: "3D Typer",
+		description: "Just type, and characters come out",
+		href: "https://o3d.xallt.dev",
+		image: null,
 	},
 	{
-		media: { kind: "text", text: "Tralala Prapapapa" },
-		title: "Fun thing",
-		excerpt: "Some funsies",
+		name: "3D Books",
+		description: "Interactive 3D books, with actual contents + VR",
+		href: "https://lib3d.xallt.dev",
+		image: null,
 	},
 	{
-		media: { kind: "avatar" },
-		title: "Literally me",
-		excerpt: "Some funsies",
+		name: "Noise Texture Generator",
+		description: "In-browser procedural noise textures.",
+		href: "https://xallt.dev/noise-texture-generator",
+		image: "/src/assets/img/stuff-preview/NoiseGeneration.png",
 	},
 	{
-		media: { kind: "text", text: "Tralala Prapapapa" },
-		title: "Fun thing",
-		excerpt: "some funsies",
+		name: "Tic80 Carts",
+		description: "TIC-80 cartridges and a small player UI.",
+		href: "https://xallt.dev/tic80-carts",
+		image: "/src/assets/gif/tic-carts/solar_system.gif",
 	},
+	{
+		name: "Wikinator",
+		description: "Wiki-oriented Flask app and experiments.",
+		href: "https://wikinator.xallt.dev",
+		image: "/src/assets/img/stuff-preview/Wikinator.png",
+	},
+	{
+		name: "Love2D things",
+		description: "LÖVE2D games and prototypes.",
+		href: "https://xallt.dev/love2d",
+		image: null,
+	},
+	{
+		name: "Predicate Generator",
+		description: "Prediction workflows with a FastAPI backend and web UI.",
+		href: "https://predgen.xallt.dev",
+		image: null,
+	},
+	{
+		name: "My reviews",
+		description: "Short personal reviews and notes.",
+		href: "https://xallt.dev/reviews",
+		image: null,
+	},
+	{
+		name: "Shadertoy",
+		description: "Shadertoy experiments, just some fun",
+		href: "https://www.shadertoy.com/user/KavabONga",
+		image: null,
+	}
 ];
