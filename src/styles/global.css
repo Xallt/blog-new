@@ -89,14 +89,22 @@ pre code {
   font-family: inherit;
   font-size: inherit;
   text-indent: 0;
-  padding: 0;           
-  background: none;     
+  padding: 0;
+  background: none;
+  color: inherit;
+  border-radius: 0;
 }
 
 code {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  padding: 0.15em 0.35em;
+  /* em so inline code scales with surrounding text (e.g. .post-content at 1.5rem) */
+  font-size: 0.85em;
+  padding: 0.15em 0.15em;
+  background: rgba(0, 0, 0, 0.278);
+  color: #b85618;
+  border-radius: 0.22em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 blockquote {
