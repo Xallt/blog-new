@@ -24,7 +24,6 @@ const { post } = Astro.props;
         }
     </div>
     <div class="post-meta">
-        <span class="category">{post.category}</span>
         <time>{post.date}</time>
     </div>
 </article>
@@ -61,7 +60,7 @@ const { post } = Astro.props;
 
     .post-meta {
         font-family: var(--font-family-base);
-        font-size: 0.65rem;
+        font-size: 1rem;
         text-align: right;
         white-space: nowrap;
         color: var(--text-muted-color);
@@ -80,8 +79,8 @@ const { post } = Astro.props;
         flex-wrap: wrap;
         gap: 0.35rem 0.6rem;
         font-family: var(--font-family-base);
-        font-size: 0.6rem;
-        color: var(--label-color);
+        font-size: 0.9rem;
+        color: var(--text-muted-color);
     }
 
     .post-tags li::before {

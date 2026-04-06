@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { category, tags } = parsePost(post);
+const { tags } = parsePost(post);
 
 const { Content } = await render(post);
 ---

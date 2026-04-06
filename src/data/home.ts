@@ -29,7 +29,6 @@ export interface HeroData {
 export interface Post {
 	title: string;
 	tags: string[];
-	category: string;
 	/** Display as DD.MM.YYYY */
 	date: string;
 	slug: string;
@@ -46,7 +45,6 @@ export function parsePost(post: CollectionEntry<"posts">): Post {
 	return {
 		title: post.data.title,
 		tags: post.data.tags,
-		category: post.data.categories[post.data.categories.length - 1],
 		date: formatDisplayDate(post.data.pubDate),
 		slug: post.id,
 	};
