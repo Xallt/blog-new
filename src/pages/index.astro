@@ -12,7 +12,7 @@ const allPosts = await getCollection("posts");
 const recentPosts: Post[] = [...allPosts]
 	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 	.slice(0, 3)
-	.map((entry) => parsePost(entry.data));
+	.map((entry) => parsePost(entry));
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">

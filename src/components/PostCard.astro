@@ -10,7 +10,9 @@ const { post } = Astro.props;
 
 <article class="post-row">
     <div class="post-main">
-        <h3 class="post-title">{post.title}</h3>
+        <h3 class="post-title">
+            <a href={`/posts/${post.slug}`}>{post.title}</a>
+        </h3>
         {
             post.tags.length > 0 && (
                 <ul class="post-tags">

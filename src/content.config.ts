@@ -13,7 +13,7 @@ const postSchema = z.object({
 export type PostSchema = z.infer<typeof postSchema>;
 
 const posts = defineCollection({
-	loader: glob({ pattern: "**/*.md", base: "./src/pages/posts" }),
+	loader: glob({ pattern: "**/*.md", base: "./src/posts" }),
 	schema: postSchema,
 });
 

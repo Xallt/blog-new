@@ -1,4 +1,4 @@
-import type { PostSchema } from "../content.config";
+import type { CollectionEntry } from "astro:content";
 
 export interface NavItem {
 	label: string;
@@ -32,6 +32,7 @@ export interface Post {
 	category: string;
 	/** Display as DD.MM.YYYY */
 	date: string;
+	slug: string;
 }
 
 function formatDisplayDate(d: Date): string {
@@ -41,12 +42,13 @@ function formatDisplayDate(d: Date): string {
 	return `${dd}.${mm}.${yyyy}`;
 }
 
-export function parsePost(post: PostSchema): Post {
+export function parsePost(post: CollectionEntry<"posts">): Post {
 	return {
-		title: post.title,
-		tags: post.tags,
-		category: post.category,
-		date: formatDisplayDate(post.pubDate),
+		title: post.data.title,
+		tags: post.data.tags,
+		category: post.data.category,
+		date: formatDisplayDate(post.data.pubDate),
+		slug: post.id,
 	};
 }
 
