@@ -46,6 +46,12 @@ body {
 	color: var(--text-color);
 }
 
+img,
+video {
+	max-width: 100%;
+	height: auto;
+}
+
 h1,
 h2,
 h3,
