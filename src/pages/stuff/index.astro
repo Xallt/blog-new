@@ -1,0 +1,13 @@
+---
+import CardGrid from "../../components/CardGrid.astro";
+import Nav from "../../components/Nav.astro";
+import { cards, navItems } from "../../data/home";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Dmitry Shabat — Home">
+    <div class="page">
+        <Nav items={navItems} />
+        <CardGrid cards={cards} />
+    </div>
+</BaseLayout>

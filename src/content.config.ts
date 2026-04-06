@@ -5,7 +5,7 @@ import { defineCollection } from "astro:content";
 const postSchema = z.object({
 	title: z.string(),
 	tags: z.array(z.string()).default([]),
-	category: z.string(),
+	categories: z.array(z.string()).default([]),
 	/** Used for ordering; displayed as DD.MM.YYYY in the UI */
 	pubDate: z.coerce.date(),
 });
