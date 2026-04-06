@@ -6,7 +6,8 @@ interface Props {
 	description?: string;
 }
 
-const { title, description = "Dmitry Shabat — portfolio and writing" } = Astro.props;
+const { title, description = "Dmitry Shabat — portfolio and writing" } =
+	Astro.props;
 ---
 
 <!doctype html>
@@ -15,7 +16,10 @@ const { title, description = "Dmitry Shabat — portfolio and writing" } = Astro
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width, viewport-fit=cover" />
+		<meta
+			name="viewport"
+			content="width=device-width, viewport-fit=cover"
+		/>
 		<meta name="generator" content={Astro.generator} />
 		{description && <meta name="description" content={description} />}
 		<title>{title}</title>
@@ -30,6 +34,10 @@ const { title, description = "Dmitry Shabat — portfolio and writing" } = Astro
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 			crossorigin="anonymous"
 			referrerpolicy="no-referrer"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css"
 		/>
 	</head>
 	<body>
