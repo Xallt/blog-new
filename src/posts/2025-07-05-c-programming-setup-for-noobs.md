@@ -35,7 +35,7 @@ But it's easy to have a very pleasant setup that doesn't require me to really tw
 
 And **Monokai** as my Color Theme of choice
 
-![IDE screenshot](/assets/img/c-programming-setup/vscode-screenshot.png)
+![IDE screenshot](../assets/img/c-programming-setup/vscode-screenshot.png)
 _How my IDE setup looks_
 
 > My other must-have is the [Vim](https://marketplace.visualstudio.com/items?itemName=vscodevim.vim) extension —  if you're not familiar, I believe the speedup is worth investing a ~week of your life into developing the muscle memory for it. \
@@ -97,7 +97,7 @@ What this does is:
 {:.prompt-warning}
 
 A very common issue that I encountered while setting up C++ projects -- the linter just doesn't understand where to search for your header `.h`/`.hpp` files / where to find the libraries.
-![Linter Issue](/assets/img/c-programming-setup/linter-issue.png){: w="600"}
+![Linter Issue](../assets/img/c-programming-setup/linter-issue.png){: w="600"}
 _Some examples of things that the linter gets weirdly wrong_
 
 But your compiler can provide your linter with those hints -- just add `-DCMAKE_EXPORT_COMPILE_COMMANDS=1` to your CMake flags (as in the `build.sh` script in the [CMake section](#cmake)), and then setup a `.clangd` at the root of your project with 
@@ -142,5 +142,5 @@ As mentioned, the [CodeLLDB](https://open-vsx.org/extension/vadimcn/vscode-lldb)
 }
 ```
 
-![Debugger screenshot](/assets/img/c-programming-setup/debugger-screenshot.png)
+![Debugger screenshot](../assets/img/c-programming-setup/debugger-screenshot.png)
 _How the debugger looks. Very convenient, and snappy fast for C++_

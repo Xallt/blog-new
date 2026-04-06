@@ -14,7 +14,7 @@ Markdown table
 
 | With slashed zeros | Without slashed zeros |
 |:---:|:---:|
-| ![](/assets/img/slashed-zeros/with-slashed-zeros.png) | ![](/assets/img/slashed-zeros/without-slashed-zeros.png) |
+| ![](../assets/img/slashed-zeros/with-slashed-zeros.png) | ![](../assets/img/slashed-zeros/without-slashed-zeros.png) |
 
 ----
 

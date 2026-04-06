@@ -26,7 +26,7 @@ In this paper we're simply training a model that, given a single input image, pr
 
 Let's pull up the image describing their model architecture:
 
-![lrm architecture](/assets/img/lrm-overview/Pasted%20image%2020231117002052.png)
+![lrm architecture](../assets/img/lrm-overview/Pasted%20image%2020231117002052.png)
 _LRM architecture from the paper_
 
 This is just for reference -- it's *some* kind of neural network that just does "Image -> NeRF". How a NeRF can be regressed with a model I'll explain [here](#nerf-for-3d-representation).
@@ -96,7 +96,7 @@ Now model architecture itself -- it has crucial ideas too.\
 Lots of scary blocks, so let's go component by component.
 
 ## NeRF for 3D representation
-![nerf representation](/assets/img/lrm-overview/Pasted%20image%2020231117102853.png)
+![nerf representation](../assets/img/lrm-overview/Pasted%20image%2020231117102853.png)
 _A NeRF is predicted via regressing triplanes_
 
 Just like *most* of the current state-of-the-art Image-to-3D/Text-to-3D approaches, this paper generates an object represented as a NeRF. It does so by **regressing the planes** for the **Triplane Encoder** that is introduced in [TensoRF](https://apchenstu.github.io/TensoRF/).
@@ -107,13 +107,13 @@ The MLP is the same for every object -- only the Triplane features change, there
 
 ## Image Encoder
 
-![image encoder architecture](/assets/img/lrm-overview/Pasted%20image%2020231117002449.png)
+![image encoder architecture](../assets/img/lrm-overview/Pasted%20image%2020231117002449.png)
 _Image encoder architecture_
 
 Almost always when processing a single image with some type of Neural Network, we want to extract *meaningful* features for future processing. This paper goes the **Transfer Learning** path and just uses the image encoder from [DiNO](https://arxiv.org/abs/2104.14294) (very powerful image embedder **trained with self-supervision**). Not much else to describe here.
 
 ## Injecting image features into the Triplane
-![predicting the triplanes from image features](/assets/img/lrm-overview/Pasted%20image%2020231117104035.png)
+![predicting the triplanes from image features](../assets/img/lrm-overview/Pasted%20image%2020231117104035.png)
 _Cross-Attention to integrate image features into the triplane_
 
 So, on the left here you can see **Learnable positional encodings** with the shape $(3 \times 32 \times 32) \times 1024$ -- you can maybe guess that these positional embeddings are also a TensoRF Triplane, i.e. the 3 images comprising such a Triplane. I called this section **"Injecting image features into the Triplane"** because we aren't really predicting those Triplane images -- we're **modifying existing ones via Cross-Attention**.
@@ -122,7 +122,7 @@ The encoded camera parameters are also injected in this decoder, though I don't 
 
 Looking at how this transformer with Cross-Attention is implemented isn't really that informative:
 
-![transformer formulas](/assets/img/lrm-overview/Pasted%20image%2020231117104843.png)
+![transformer formulas](../assets/img/lrm-overview/Pasted%20image%2020231117104843.png)
 _The formulas for a single Image-to-Triplane layer_
 
 BUUT knowing that there's 16 layers of this Cross/Self-Attention does make an impression that we're **meta-learning Score Distillation Sampling**, i.e. the Attention layers **simulate the distillation of image features** into 3D.

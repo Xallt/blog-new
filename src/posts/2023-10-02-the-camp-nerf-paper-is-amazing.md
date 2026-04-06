@@ -29,7 +29,7 @@ Also, an important note — I recommend reading all of this only if you’ve rea
 
 Basic ideas as preliminaries to the main idea:
 - Usually camera positions for NeRF are obtained with [COLMAP](https://demuc.de/colmap/), pretty old-style Computer Vision software for estimating scene geometry and camera parameters from a large set of photos
-![](/assets/img/camp_paper/colmap_colliseum.png)
+![](../assets/img/camp_paper/colmap_colliseum.png)
 _COLMAP: Reconstruction of the area around the Colloseum from lots of tourist photos_
 
 - Sometimes these estimated cameras aren’t perfect — they may be an infinitesimall unit away from the true camera parameters
@@ -66,7 +66,7 @@ $$
 “homogeneous“ here means that the 3rd component is the depth. And dividing the whole vector by that depth is basically the operation that gives the perspective effect — coordinates of objects with larger depths will be divided by a larger value, therefore the object will become smaller:
 
 I reeeally enjoyed making all these LaTeX formulas, but I got a little off-topic.
-![Excalidraw drawing intrinsic parameters visualization](/assets/img/camp_paper/excalidraw_intrinsic.png){: w="500"}
+![Excalidraw drawing intrinsic parameters visualization](../assets/img/camp_paper/excalidraw_intrinsic.png){: w="500"}
 _An old drawing of mine I made to derive the values in the intrinsic matrix_
 
 The point is (or, my intuition is) — the translation & rotation matrices affect the projections of points in a pretty straightforward manner. Move the camera’s position with some vector — the projections will move by something proportional in magnitude to that vector (if we assume that the parallax effect isn’t too strong). The rotation similarly affects points by some vector with magnitude proportional to a sine/cosine or whatever of the angle change.

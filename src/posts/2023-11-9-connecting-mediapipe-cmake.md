@@ -45,7 +45,7 @@ This post in particular is about the first stage of the development of this app,
 
 |Visualization of a graph|Snippet of this graph's definition|
 |:-:|:-:|
-|![Mediapipe handtracking graph](/assets/img/connecting_mediapipe_cmake/mediapipe_handtracking_graph.png)|![how this graph is defined in text](/assets/img/connecting_mediapipe_cmake/handtracking_pbtxt.png)|
+|![Mediapipe handtracking graph](../assets/img/connecting_mediapipe_cmake/mediapipe_handtracking_graph.png)|![how this graph is defined in text](../assets/img/connecting_mediapipe_cmake/handtracking_pbtxt.png)|
 
 
 > While looking for other Mediapipe tools, I found out you can [upload your profiling log](https://github.com/google/mediapipe/blob/master/docs/tools/tracing_and_profiling.md) to [viz.mediapipe.dev](https://viz.mediapipe.dev) and it will visualize both the graph, all the statistics, and also *all intermediate states of each node?* (not sure). Whatever that does, it looks fantastic

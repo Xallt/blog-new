@@ -20,7 +20,7 @@ Recently at work I was researching ML approaches to image matching, specifically
 Inevitably, both of these methods being trained in a supervised manner, they need a sufficiently big dataset of Ground-Truth points pairs between a large corpus of images. I looked at what kind of data ALIKE specifically is trained on, and saw that one of the datasets provides images of planes with annotated true Homograhy transformation between cameras.
 
 
-![The HPatches dataset mention](/assets/img/homography/Pasted image 20241228140316.png){: w="600"}
+![The HPatches dataset mention](../assets/img/homography/Pasted image 20241228140316.png){: w="600"}
 _Mention of the HPatches dataset in the ALIKE paper_
 
 Now, I've of course heard about homographies before --- that's the matrix that, for a given plane, describes how to match a point on one camera with a point on another camera if they're observing the same point on that plane.
@@ -29,7 +29,7 @@ But after looking at this, and reviewing all my knowledge, I thought... why does
 
 This was leaving me dumbfounded because I couldn't simply come up with an intuitive explanation of why we couldn't apply some kind of similar assumption to any other shape. If two cameras looked at a sphere instead of a plane, would the mapping of pixels from one camera to the other also be describable with a linear matrix? Of course not, the projection of rays from a camera to a sphere is a very non-linear operation, so why would the relation of matching pixels between two cameras be linear in this case?
 
-![Visualization of the mapping between cameras](/assets/img/homography/Screenshot 2024-12-28 at 14.34.29.png){: w="600"}
+![Visualization of the mapping between cameras](../assets/img/homography/Screenshot 2024-12-28 at 14.34.29.png){: w="600"}
 _Mapping between cameras, in the case of a sphere and a plate_
 
 Anyways, I started jumping through various online resources about what homographies really are but none really satisfied my need to understand the underlying logic.
@@ -42,7 +42,7 @@ So, here's my pretty detailed derivation of the formula for the homography matri
 
 |||
 |:-:|:-:|
-|![Homography derivation 1](/assets/img/homography/homography-derivation-1.jpg){: h="400"}|![Homography derivation 2](/assets/img/homography/homography-derivation-2.jpg){: h="400"}|
+|![Homography derivation 1](../assets/img/homography/homography-derivation-1.jpg){: h="400"}|![Homography derivation 2](../assets/img/homography/homography-derivation-2.jpg){: h="400"}|
 
 Now this is what I'm talking about!
 
