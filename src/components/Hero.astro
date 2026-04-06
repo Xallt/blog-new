@@ -1,8 +1,8 @@
 ---
 import {
-	type HeroData,
-	type SocialLink,
-	socialLinkRel,
+type HeroData,
+type SocialLink,
+socialLinkRel,
 } from "../data/home";
 import WebNeko from "./webneko.html";
 
@@ -33,6 +33,7 @@ const { hero } = Astro.props;
 
 		<h1 id="hero-heading" class="hero-name">
 			{hero.name}
+			<br/>
 			{hero.neko && <WebNeko />}
 		</h1>
 		<p class="hero-title">{hero.title}</p>
