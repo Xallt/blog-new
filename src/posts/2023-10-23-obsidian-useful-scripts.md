@@ -9,12 +9,11 @@ tags:
 categories:
   - Miscellaneous
   - Task Management
-img_path: /assets/img/obsidian_useful_scripts
 ---
 
 Alright, in this post I'd like to share some Obsidian templates & scripts that have piled up over the busy year that I had.
 
-![my vault](Pasted%20image%2020231122200039.png){: w="500"}
+![my vault](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200039.png){: w="500"}
 _My vault :)_
 
 If you want to see the templates right away, go [here](#the-templates).\
@@ -78,7 +77,7 @@ LIST FROM [[]]
 ```
 ````
 
-![](Pasted%20image%2020231122200616.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200616.png){: w="400"}
 
 - - -
 The link/tool/dataset/library template (only the type property changes)
@@ -93,7 +92,7 @@ link:
 ## Link: `= this.file.frontmatter.link`
 ```
 
-![](Pasted%20image%2020231122200734.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200734.png){: w="400"}
 
 - - -
 The "paper" template
@@ -127,7 +126,7 @@ if (pairs.length > 0) {
 ```
 ````
 
-![](Pasted%20image%2020231122200838.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200838.png){: w="400"}
 
 - - -
 The project template
@@ -141,7 +140,7 @@ type: project
 - [ ] 
 ```
 
-![](Pasted%20image%2020231122200909.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200909.png){: w="400"}
 
 ## Separate scripts
 
@@ -158,7 +157,7 @@ group by done
 ```
 ````
 
-![](Pasted%20image%2020231122200932.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200932.png){: w="400"}
 
 - - -
 Listing all tasks from all projects (except for those with property “hide: true“ or “completed: true“)
@@ -227,7 +226,7 @@ for (let i = 0; i < tasks_due_grouped.length; i += 1) {
 ```
 ````
 
-![](Pasted%20image%2020231122201006.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122201006.png){: w="400"}
 
 ---
 
@@ -273,7 +272,7 @@ function getParentDescription(task) {
  ```
 ````
 
-![](Pasted%20image%2020231122201028.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122201028.png){: w="400"}
 
 ---
 
@@ -310,4 +309,4 @@ dv.taskList([leafUncompletedTasks[taskSelectedNum]]);
 ````
 
 
-![](Pasted%20image%2020231122201054.png){: w="400"}
+![](/assets/img/obsidian_useful_scripts/Pasted%20image%2020231122201054.png){: w="400"}
