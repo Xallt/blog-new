@@ -20,8 +20,15 @@ const { Content } = await render(post);
 ---
 
 <BaseLayout title={post.data.title}>
-    <div class="page">
+    <div class="page post-content">
         <Nav items={navItems} />
         <Content />
     </div>
 </BaseLayout>
+
+<style>
+    .post-content {
+        font-size: 1.5rem;
+        font-weight: 400;
+    }
+</style>
