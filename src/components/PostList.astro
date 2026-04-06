@@ -1,6 +1,7 @@
 ---
 import type { Post } from "../data/home";
 import PostCard from "./PostCard.astro";
+
 interface Props {
 	posts: Post[];
 }
@@ -8,21 +9,26 @@ interface Props {
 const { posts } = Astro.props;
 ---
 
-<section class="section" aria-labelledby="posts-heading">
-	<h2 id="posts-heading" class="visually-hidden">Recent posts</h2>
-	<div class="post-list">
-		{posts.map((post) => <PostCard post={post} />)}
-	</div>
-</section>
+<div class="post-list">
+	{posts.map((post) => <PostCard post={post} />)}
+</div>
 
 <style>
-	.section {
-		margin-bottom: var(--space-xl);
-	}
-
 	.post-list {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-md);
+	}
+</style>
+
+<style is:global>
+	.posts-section-title {
+		font-family: var(--font-family-heading);
+		font-size: clamp(1.75rem, 4vw, 2.35rem);
+		font-weight: 400;
+		line-height: 1.15;
+		margin: 0 0 var(--space-md);
+		text-align: center;
+		color: var(--heading-color);
 	}
 </style>

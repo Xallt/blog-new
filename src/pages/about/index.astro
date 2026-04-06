@@ -1,0 +1,124 @@
+---
+import { Image } from "astro:assets";
+import Nav from "../../components/Nav.astro";
+import mePhoto from "../../assets/img/me.jpg";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { navItems } from "../../data/home";
+
+const resumeHref = `/assets/pdf/resume.pdf?v=${Math.floor(Date.now() / 1000)}`;
+---
+
+<BaseLayout title="Dmitry Shabat — About">
+	<div class="page post-content">
+		<Nav items={navItems} />
+		<article class="about-prose" lang="en">
+			<header class="about-header">
+				<h1 class="about-title">About</h1>
+			</header>
+			<Image
+				src={mePhoto}
+				alt="Dmitry Shabat"
+				class="about-portrait"
+				width={200}
+				loading="eager"
+			/>
+			<p>
+				Did competitive programming for 3 years, got very interested in
+				Computer Graphics, Machine Learning, AR/VR.
+			</p>
+			<p><strong>Career:</strong></p>
+			<ul>
+				<li>
+					<a href="https://funexpectedapps.com/">Funexpected</a> where I was
+					an Intern Godot Developer. I actually programmed most of the
+					ninja-minigame in their Funexpected Math app! I was 16 at the time.
+				</li>
+				<li>
+					2 years at <a href="https://3d-smile.ru/">3D Smile</a> part-time as a
+					Machine Learning Engineer, working on an internal pipeline for teeth
+					detection and segmentation — lots of R&amp;D and some work on the
+					internal ML infrastructure.
+				</li>
+				<li>
+					2 years at <a href="https://clostra.com/">Clostra</a> as a full-time
+					Machine Learning Engineer, working on various 3D Vision methods: depth
+					estimation, NeRFs, 3D GANs, etc. Most importantly, learned to stay on
+					top of state-of-the-art research and constantly implement &amp; test
+					new stuff, and work with researchers' code.
+				</li>
+				<li>
+					Worked for 4 months at <a href="https://www.gracia.ai/">Gracia AI</a> as
+					an ML Research Engineer, improving the quality and efficiency of the
+					photorealistic 3D captures.
+				</li>
+				<li>
+					Currently working at Medida AI, making the work of national USA window
+					manufacturers way easier with Computer Vision! (will share more on
+					that later).
+				</li>
+			</ul>
+			<p>
+				Here is my complete up-to-date resume:
+				<a href={resumeHref}>resume.pdf</a>
+			</p>
+		</article>
+	</div>
+</BaseLayout>
+
+<style>
+	.post-content {
+		font-size: 1.5rem;
+		font-weight: 400;
+	}
+
+	.about-prose {
+		max-width: 65ch;
+		margin-inline: auto;
+	}
+
+	.about-header {
+		margin-bottom: var(--space-md);
+		text-align: center;
+	}
+
+	.about-title {
+		margin: 0;
+		font-size: 2.5rem;
+		font-weight: 400;
+		color: var(--heading-color);
+		font-family: var(--font-family-heading);
+	}
+
+	.about-prose :global(img.about-portrait) {
+		float: right;
+		width: 200px;
+		height: auto;
+		max-width: min(200px, 46%);
+		margin: 0 0 var(--space-sm) var(--space-md);
+		border-radius: 4px;
+	}
+
+	.about-prose::after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+
+	.about-prose ul {
+		padding-left: 1.25rem;
+		margin: 0 0 var(--space-md);
+	}
+
+	.about-prose li {
+		margin-bottom: var(--space-sm);
+	}
+
+	@media (max-width: 520px) {
+		.about-prose :global(img.about-portrait) {
+			float: none;
+			display: block;
+			max-width: 200px;
+			margin: 0 auto var(--space-md);
+		}
+	}
+</style>

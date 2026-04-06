@@ -1,4 +1,6 @@
 ---
+import { Image } from "astro:assets";
+import heroPortrait from "../assets/me/hero.jpg";
 import { type HeroData, type SocialLink, socialLinkRel } from "../data/home";
 import WebNeko from "./webneko.html";
 
@@ -12,35 +14,25 @@ const { hero } = Astro.props;
 <section class="hero section" aria-labelledby="hero-heading">
 	<div class="hero-inner">
 		<div class="avatar-ring" aria-hidden="true">
-			<svg
-				viewBox="0 0 80 80"
-				class="avatar-svg"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<circle
-					cx="40"
-					cy="40"
-					r="36"
-					fill="none"
-					stroke="var(--text-color)"
-					stroke-width="2.5"></circle>
-				<circle cx="30" cy="32" r="3" fill="var(--text-color)"></circle>
-				<circle cx="50" cy="32" r="3" fill="var(--text-color)"></circle>
-				<path
-					d="M 28 48 Q 40 58 52 48"
-					fill="none"
-					stroke="var(--text-color)"
-					stroke-width="2.5"
-					stroke-linecap="round"></path>
-			</svg>
+			<Image
+				src={heroPortrait}
+				alt=""
+				class="avatar-img"
+				width={500}
+				height={500}
+				loading="eager"
+				fetchpriority="high"
+			/>
 		</div>
 
 		<h1 id="hero-heading" class="hero-name">
 			{hero.name}
+		</h1>
+		<p class="hero-title">
+			{hero.title}
 			<br />
 			{hero.neko && <WebNeko />}
-		</h1>
-		<p class="hero-title">{hero.title}</p>
+		</p>
 		<nav class="hero-social" aria-label="Social links">
 			{
 				hero.socialLinks.map((link: SocialLink) => (
@@ -67,9 +59,9 @@ const { hero } = Astro.props;
 	.hero {
 		position: relative;
 		text-align: center;
-		padding-top: var(--space-md);
+		padding-top: var(--space-xs);
 		padding-bottom: var(--space-lg);
-		margin-bottom: var(--space-xl);
+		margin-bottom: var(--space-md);
 	}
 
 	.hero-graph {
@@ -97,14 +89,20 @@ const { hero } = Astro.props;
 	}
 
 	.avatar-ring {
-		width: 5.5rem;
-		height: 5.5rem;
+		width: 11rem;
+		height: 11rem;
 		margin-bottom: var(--space-md);
+		border-radius: 50%;
+		overflow: hidden;
+		flex-shrink: 0;
+		border: 2px solid var(--border-color);
 	}
 
-	.avatar-svg {
+	.avatar-img {
 		width: 100%;
-		height: auto;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
 		display: block;
 	}
 

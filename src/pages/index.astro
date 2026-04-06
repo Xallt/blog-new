@@ -13,13 +13,39 @@ const recentPosts: Post[] = [...allPosts]
 	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 	.slice(0, 3)
 	.map((entry) => parsePost(entry));
+
+const previewStuff = stuff.filter((s) => s.image != null).slice(0, 3);
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">
 	<div class="page">
 		<Nav items={navItems} />
 		<Hero hero={hero} />
-		<PostList posts={recentPosts} />
-		<StuffGrid stuff={stuff} />
+		<section class="section" aria-labelledby="stuff-heading">
+			<h2 id="stuff-heading" class="stuff-section-title">Stuff</h2>
+			<StuffGrid stuff={previewStuff} />
+			<p class="home-section-cta">
+				<a href="/stuff">See more</a>
+			</p>
+		</section>
+		<section class="section" aria-labelledby="posts-heading">
+			<h2 id="posts-heading" class="posts-section-title">Posts</h2>
+			<PostList posts={recentPosts} />
+			<p class="home-section-cta">
+				<a href="/posts">Read more</a>
+			</p>
+		</section>
 	</div>
 </BaseLayout>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+
+	.home-section-cta {
+		margin: var(--space-md) 0 0;
+		text-align: center;
+		font-size: calc(1.05rem);
+	}
+</style>

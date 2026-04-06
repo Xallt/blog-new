@@ -12,9 +12,18 @@ const posts: Post[] = [...allPosts]
 	.map((entry) => parsePost(entry));
 ---
 
-<BaseLayout title="Dmitry Shabat — Home">
+<BaseLayout title="Dmitry Shabat — Posts">
 	<div class="page">
 		<Nav items={navItems} />
-		<PostList posts={posts} />
+		<section class="section" aria-labelledby="posts-heading">
+			<h2 id="posts-heading" class="posts-section-title">Posts</h2>
+			<PostList posts={posts} />
+		</section>
 	</div>
 </BaseLayout>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+</style>

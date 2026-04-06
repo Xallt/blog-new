@@ -3,11 +3,24 @@ import Nav from "../../components/Nav.astro";
 import StuffGrid from "../../components/StuffGrid.astro";
 import { navItems, stuff } from "../../data/home";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const withImages = stuff.filter((s) => s.image != null);
+const withoutImages = stuff.filter((s) => s.image == null);
+const orderedStuff = [...withImages, ...withoutImages];
 ---
 
 <BaseLayout title="Dmitry Shabat — Stuff">
 	<div class="page">
 		<Nav items={navItems} />
-		<StuffGrid stuff={stuff} />
+		<section class="section" aria-labelledby="stuff-heading">
+			<h2 id="stuff-heading" class="stuff-section-title">Stuff</h2>
+			<StuffGrid stuff={orderedStuff} />
+		</section>
 	</div>
 </BaseLayout>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+</style>
