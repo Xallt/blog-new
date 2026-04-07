@@ -1,6 +1,6 @@
 import ForceGraph from "force-graph";
 
-type ForceNode = { id: string; name?: string; val?: number };
+type ForceNode = { id: string; name?: string; val?: number; type?: string };
 type ForceLink = { source: string; target: string };
 type GraphPayload = { nodes: ForceNode[]; links: ForceLink[] };
 
@@ -15,6 +15,12 @@ type SimNode = {
 
 const BG = "rgb(27, 27, 30)";
 const NODE_RGB = "130, 145, 170";
+/** Muted RGB triples for `type` from Obsidian frontmatter (export.py). */
+const NODE_RGB_BY_TYPE: Record<string, string> = {
+	paper: "118, 158, 214",
+	library: "128, 188, 152",
+	definition: "206, 168, 118",
+};
 const LINK_RGB = "85, 95, 115";
 const NODE_ALPHA = 0.12;
 const LINK_ALPHA = 0.22;
@@ -31,7 +37,7 @@ const D3_ALPHA_DECAY = 0.018;
 /** Lower = velocities decay slower (default in d3-force ~0.4) */
 const D3_VELOCITY_DECAY = 0.12;
 /** Base velocity noise per tick; multiplied by max(alpha, AMBIENT_ALPHA_FLOOR) */
-const AMBIENT_JITTER = 2.0;
+const AMBIENT_JITTER = 0.3;
 const AMBIENT_ALPHA_FLOOR = 0.02;
 
 /** Cursor: graph-space influence radius (falloff from cursor position) */
@@ -183,6 +189,12 @@ export function mountObsidianGraphBackground(
 
 			const ambientForce = createAmbientForce();
 
+			function nodeRgb(node: ForceNode): string {
+				const t = node.type?.trim().toLowerCase();
+				if (t && NODE_RGB_BY_TYPE[t]) return NODE_RGB_BY_TYPE[t];
+				return NODE_RGB;
+			}
+
 			fg = new ForceGraph(container)
 				.graphData(json)
 				.width(w)
@@ -190,9 +202,10 @@ export function mountObsidianGraphBackground(
 				.backgroundColor(BG)
 				.autoPauseRedraw(false)
 				.nodeLabel(() => "")
-				.nodeColor(
-					() => `rgba(${NODE_RGB}, ${NODE_ALPHA * nodeFade})`,
-				)
+				.nodeColor((n) => {
+					const node = n as ForceNode;
+					return `rgba(${nodeRgb(node)}, ${NODE_ALPHA * nodeFade})`;
+				})
 				.nodeVal("val")
 				.nodeRelSize(3)
 				.linkColor(() => `rgba(${LINK_RGB}, ${LINK_ALPHA * nodeFade})`)

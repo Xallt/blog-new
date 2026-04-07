@@ -2,6 +2,9 @@
 """
 Export obsidiantools vault.graph to JSON for force-graph.
 
+Each node includes optional string `type` from YAML frontmatter `type:`
+(paper / library / definition preferred when multiple values are set).
+
   cd scripts/obsidian-graph-export
   uv sync
   uv run python export.py --vault /path/to/vault --out ../../public/obsidian-graph.json
@@ -59,6 +62,17 @@ def frontmatter_type_values(vault, node) -> frozenset[str]:
     return frozenset({str(raw).strip().lower()})
 
 
+def primary_frontmatter_type(vault, node) -> str | None:
+    """Single `type` string for export: prefer DEFAULT_TYPES order, else lexicographic first."""
+    values = frontmatter_type_values(vault, node)
+    if not values:
+        return None
+    for t in DEFAULT_TYPES:
+        if t in values:
+            return t
+    return min(values)
+
+
 def subgraph_by_frontmatter_types(vault, G, allowed_types: frozenset[str]):
     """Induced subgraph: only nodes whose frontmatter `type` matches allowed_types."""
     if not allowed_types:
@@ -71,8 +85,8 @@ def subgraph_by_frontmatter_types(vault, G, allowed_types: frozenset[str]):
     return G.subgraph(keep).copy()
 
 
-def graph_to_force_json(G, *, skip_self_loops: bool = True) -> dict:
-    """Build { nodes, links } for force-graph (string ids)."""
+def graph_to_force_json(vault, G, *, skip_self_loops: bool = True) -> dict:
+    """Build { nodes, links } for force-graph (string ids). Nodes include `type` when known."""
     nodes_out = []
     for n in G.nodes():
         nid = str(n)
@@ -80,7 +94,11 @@ def graph_to_force_json(G, *, skip_self_loops: bool = True) -> dict:
         name = PurePath(nid).name
         if name.lower().endswith(".md"):
             name = name[: -len(".md")]
-        nodes_out.append({"id": nid, "name": name, "val": max(1, deg)})
+        rec: dict = {"id": nid, "name": name, "val": max(1, deg)}
+        ptype = primary_frontmatter_type(vault, n)
+        if ptype is not None:
+            rec["type"] = ptype
+        nodes_out.append(rec)
 
     seen_undirected: set[tuple[str, str]] = set()
     links_out = []
@@ -180,7 +198,9 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
 
-    payload = graph_to_force_json(G, skip_self_loops=not args.include_self_loops)
+    payload = graph_to_force_json(
+        vault, G, skip_self_loops=not args.include_self_loops
+    )
     text = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
     out_path.write_text(text, encoding="utf-8")
     print(f"Wrote {out_path} ({len(text) // 1024} KiB)", file=sys.stderr)
