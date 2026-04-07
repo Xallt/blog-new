@@ -57,6 +57,7 @@ export interface Stuff {
 	href: string;
 	/** Vite glob key: `/src/assets/...` (jpeg, jpg, png, or gif), or null */
 	image: string | null;
+	listed: boolean;
 }
 
 export const navItems: NavItem[] = [
@@ -81,59 +82,70 @@ export const hero: HeroData = {
 };
 
 /** Listed services from site deploy config (`listed: true`), links on xallt.dev */
-export const stuff: Stuff[] = [
+const _allStuff: Stuff[] = [
 	{
-		name: "3D Typer",
-		description: "Just type, and characters come out",
-		href: "https://o3d.xallt.dev",
-		image: null,
+		name: "Tic80 Carts",
+		description: "Games made in TIC-80, a fantasy computer",
+		href: "https://xallt.dev/tic80-carts",
+		image: "/src/assets/gif/tic-carts/solar_system.gif",
+		listed: true,
 	},
 	{
-		name: "3D Books",
-		description: "Interactive 3D books, with actual contents + VR",
-		href: "https://lib3d.xallt.dev",
-		image: null,
+		name: "My reviews",
+		description: "My opinions on various things",
+		href: "https://xallt.dev/reviews",
+		image: "/src/assets/img/stuff-preview/reviews-screenshot.jpg",
+		listed: true,
 	},
 	{
 		name: "Noise Texture Generator",
-		description: "In-browser procedural noise textures.",
+		description: "Procedural noise textures.",
 		href: "https://xallt.dev/noise-texture-generator",
 		image: "/src/assets/img/stuff-preview/NoiseGeneration.png",
+		listed: true,
 	},
 	{
-		name: "Tic80 Carts",
-		description: "TIC-80 cartridges and a small player UI.",
-		href: "https://xallt.dev/tic80-carts",
-		image: "/src/assets/gif/tic-carts/solar_system.gif",
+		name: "3D Typer",
+		description: "3D text powered by 2D polygon triangulation in Rust",
+		href: "https://o3d.xallt.dev",
+		image: "/src/assets/img/stuff-preview/o3d-screenshot.jpg",
+		listed: true,
+	},
+	{
+		name: "3D Books",
+		description: "Actual books, made interactive in 3D with Three.js",
+		href: "https://lib3d.xallt.dev",
+		image: "/src/assets/img/stuff-preview/lib3d-screenshot.jpg",
+		listed: true,
 	},
 	{
 		name: "Wikinator",
 		description: "Wiki-oriented Flask app and experiments.",
 		href: "https://wikinator.xallt.dev",
 		image: "/src/assets/img/stuff-preview/Wikinator.png",
+		listed: false,
 	},
 	{
 		name: "Love2D things",
 		description: "LÖVE2D games and prototypes.",
 		href: "https://xallt.dev/love2d",
-		image: null,
+		image: "/src/assets/gif/stuff-preview/pascal-fractal.gif",
+		listed: true,
 	},
 	{
 		name: "Predicate Generator",
-		description: "Prediction workflows with a FastAPI backend and web UI.",
+		description: "Generating mathematical statements infinitely",
 		href: "https://predgen.xallt.dev",
-		image: null,
-	},
-	{
-		name: "My reviews",
-		description: "Short personal reviews and notes.",
-		href: "https://xallt.dev/reviews",
-		image: null,
+		image: "/src/assets/img/stuff-preview/PredGen.png",
+		listed: true,
 	},
 	{
 		name: "Shadertoy",
-		description: "Shadertoy experiments, just some fun",
+		description: "Just some fun shaders",
 		href: "https://www.shadertoy.com/user/KavabONga",
-		image: null,
+		image: "/src/assets/gif/stuff-preview/shadertoy.gif",
+		listed: true,
 	}
 ];
+
+export const stuff: Stuff[] = _allStuff.filter((s) => s.listed);
