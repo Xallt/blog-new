@@ -6,6 +6,13 @@ type GraphPayload = { nodes: ForceNode[]; links: ForceLink[] };
 
 type ForceGraphInstance = InstanceType<typeof ForceGraph>;
 
+type SimNode = {
+	x?: number;
+	y?: number;
+	vx?: number;
+	vy?: number;
+};
+
 const BG = "rgb(27, 27, 30)";
 const NODE_RGB = "130, 145, 170";
 const LINK_RGB = "85, 95, 115";
@@ -13,6 +20,76 @@ const NODE_ALPHA = 0.12;
 const LINK_ALPHA = 0.22;
 
 const NODE_FADE_MS = 1100;
+
+/** Scroll parallax: background translate as fraction of window.scrollY (negative = moves opposite to scroll) */
+const PARALLAX_SCROLL_K = -0.18;
+/** Slight scale so translated edges rarely show empty canvas */
+const PARALLAX_OVERSCALE = 1.07;
+
+/** Simulation alpha decay (library default ~0.0228) */
+const D3_ALPHA_DECAY = 0.018;
+/** Lower = velocities decay slower (default in d3-force ~0.4) */
+const D3_VELOCITY_DECAY = 0.12;
+/** Base velocity noise per tick; multiplied by max(alpha, AMBIENT_ALPHA_FLOOR) */
+const AMBIENT_JITTER = 2.0;
+const AMBIENT_ALPHA_FLOOR = 0.02;
+
+/** Cursor: graph-space influence radius (falloff from cursor position) */
+const CURSOR_RADIUS = 200;
+/** Scales graph-space mouse delta (not normalized — faster motion ⇒ larger kick) */
+const CURSOR_IMPULSE_STRENGTH = 0.05;
+const CURSOR_IMPULSE_ALPHA_FLOOR = 0.14;
+
+/** Once per frame: nudge nearby nodes along the mouse’s graph-space delta. */
+function applyCursorImpulse(
+	nodes: SimNode[],
+	cx: number,
+	cy: number,
+	dgx: number,
+	dgy: number,
+) {
+	if (dgx === 0 && dgy === 0) return;
+	const a = CURSOR_IMPULSE_ALPHA_FLOOR;
+	const R = CURSOR_RADIUS;
+	const R2 = R * R;
+	for (let i = 0, n = nodes.length; i < n; i++) {
+		const node = nodes[i];
+		const x = node.x;
+		const y = node.y;
+		if (x == null || y == null) continue;
+		const dx = x - cx;
+		const dy = y - cy;
+		const d2 = dx * dx + dy * dy;
+		if (d2 > R2) continue;
+		const dist = Math.sqrt(d2);
+		const t = 1 - dist / R;
+		const w = t * t;
+		const s = CURSOR_IMPULSE_STRENGTH * w * a;
+		node.vx = (node.vx ?? 0) + dgx * s;
+		node.vy = (node.vy ?? 0) + dgy * s;
+	}
+}
+
+function createAmbientForce() {
+	let nodes: SimNode[] = [];
+
+	function force(alpha: number) {
+		const a = Math.max(alpha, AMBIENT_ALPHA_FLOOR);
+		const j = AMBIENT_JITTER * a;
+		for (let i = 0, n = nodes.length; i < n; i++) {
+			const node = nodes[i];
+			if (node.x == null || node.y == null) continue;
+			node.vx = (node.vx ?? 0) + (Math.random() - 0.5) * j;
+			node.vy = (node.vy ?? 0) + (Math.random() - 0.5) * j;
+		}
+	}
+
+	force.initialize = (init: SimNode[]) => {
+		nodes = init;
+	};
+
+	return { force };
+}
 
 /** Mount force-graph into `container`. Returns teardown for tests or view transitions. */
 export function mountObsidianGraphBackground(
@@ -23,10 +100,65 @@ export function mountObsidianGraphBackground(
 	let fadeRaf = 0;
 	let nodeFade = 0;
 
+	let rippleRaf = 0;
+	let pendingRippleCoords = false;
+	let lastClientX = 0;
+	let lastClientY = 0;
+	let hasPrevGraphSample = false;
+	let prevGraphX = 0;
+	let prevGraphY = 0;
+
+	const scrollOpts: AddEventListenerOptions = { passive: true };
+
 	function onResize() {
 		if (fg) {
 			fg.width(window.innerWidth).height(window.innerHeight);
 		}
+		applyParallax();
+	}
+
+	function applyParallax() {
+		const y = window.scrollY * PARALLAX_SCROLL_K;
+		container.style.transform = `translate3d(0, ${y}px, 0) scale(${PARALLAX_OVERSCALE})`;
+	}
+
+	function onScroll() {
+		applyParallax();
+	}
+
+	function flushRippleCoords() {
+		pendingRippleCoords = false;
+		if (cancelled || !fg) return;
+		const canvas = container.querySelector("canvas");
+		if (!canvas) return;
+		const rect = canvas.getBoundingClientRect();
+		const lx = lastClientX - rect.left;
+		const ly = lastClientY - rect.top;
+		const p = fg.screen2GraphCoords(lx, ly);
+		let dgx = 0;
+		let dgy = 0;
+		if (hasPrevGraphSample) {
+			dgx = p.x - prevGraphX;
+			dgy = p.y - prevGraphY;
+		}
+		prevGraphX = p.x;
+		prevGraphY = p.y;
+		hasPrevGraphSample = true;
+		const { nodes } = fg.graphData() as { nodes: SimNode[] };
+		applyCursorImpulse(nodes, p.x, p.y, dgx, dgy);
+	}
+
+	function onMouseMove(e: MouseEvent) {
+		lastClientX = e.clientX;
+		lastClientY = e.clientY;
+		if (!pendingRippleCoords) {
+			pendingRippleCoords = true;
+			rippleRaf = requestAnimationFrame(flushRippleCoords);
+		}
+	}
+
+	function onMouseLeave() {
+		hasPrevGraphSample = false;
 	}
 
 	fetch("/obsidian-graph.json")
@@ -49,6 +181,8 @@ export function mountObsidianGraphBackground(
 				return x * x * (3 - 2 * x);
 			}
 
+			const ambientForce = createAmbientForce();
+
 			fg = new ForceGraph(container)
 				.graphData(json)
 				.width(w)
@@ -67,10 +201,24 @@ export function mountObsidianGraphBackground(
 				.enableZoomInteraction(false)
 				.enablePanInteraction(false)
 				.warmupTicks(40)
-				.cooldownTicks(160)
-				.d3VelocityDecay(0.45);
+				.cooldownTicks(Infinity)
+				.cooldownTime(Infinity)
+				.d3AlphaDecay(D3_ALPHA_DECAY)
+				.d3VelocityDecay(D3_VELOCITY_DECAY)
+				.d3Force("ambient", ambientForce.force);
+
+			fg.onEngineStop(() => {
+				if (cancelled || !fg) return;
+				fg.d3ReheatSimulation();
+			});
 
 			window.addEventListener("resize", onResize);
+			window.addEventListener("scroll", onScroll, scrollOpts);
+			window.addEventListener("mousemove", onMouseMove, { passive: true });
+			window.addEventListener("blur", onMouseLeave);
+
+			container.style.transformOrigin = "center center";
+			applyParallax();
 
 			const fadeStart = performance.now();
 			function tickNodeFade() {
@@ -112,10 +260,16 @@ export function mountObsidianGraphBackground(
 	return () => {
 		cancelled = true;
 		cancelAnimationFrame(fadeRaf);
+		cancelAnimationFrame(rippleRaf);
 		window.removeEventListener("resize", onResize);
+		window.removeEventListener("scroll", onScroll, scrollOpts);
+		window.removeEventListener("mousemove", onMouseMove);
+		window.removeEventListener("blur", onMouseLeave);
 		if (fg) {
 			fg._destructor();
 			fg = null;
 		}
+		container.style.transform = "";
+		container.style.transformOrigin = "";
 	};
 }
