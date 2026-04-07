@@ -7,8 +7,12 @@ type GraphPayload = { nodes: ForceNode[]; links: ForceLink[] };
 type ForceGraphInstance = InstanceType<typeof ForceGraph>;
 
 const BG = "rgb(27, 27, 30)";
-const NODE = "rgba(130, 145, 170, 0.12)";
-const LINK = "rgba(85, 95, 115, 0.22)";
+const NODE_RGB = "130, 145, 170";
+const LINK_RGB = "85, 95, 115";
+const NODE_ALPHA = 0.12;
+const LINK_ALPHA = 0.22;
+
+const NODE_FADE_MS = 1100;
 
 /** Mount force-graph into `container`. Returns teardown for tests or view transitions. */
 export function mountObsidianGraphBackground(
@@ -16,6 +20,8 @@ export function mountObsidianGraphBackground(
 ): () => void {
 	let fg: ForceGraphInstance | null = null;
 	let cancelled = false;
+	let fadeRaf = 0;
+	let nodeFade = 0;
 
 	function onResize() {
 		if (fg) {
@@ -38,16 +44,24 @@ export function mountObsidianGraphBackground(
 			const h = window.innerHeight;
 			if (w < 2 || h < 2) return;
 
+			function smoothstep(edge0: number, edge1: number, x: number) {
+				x = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+				return x * x * (3 - 2 * x);
+			}
+
 			fg = new ForceGraph(container)
 				.graphData(json)
 				.width(w)
 				.height(h)
 				.backgroundColor(BG)
+				.autoPauseRedraw(false)
 				.nodeLabel(() => "")
-				.nodeColor(() => NODE)
+				.nodeColor(
+					() => `rgba(${NODE_RGB}, ${NODE_ALPHA * nodeFade})`,
+				)
 				.nodeVal("val")
 				.nodeRelSize(3)
-				.linkColor(() => LINK)
+				.linkColor(() => `rgba(${LINK_RGB}, ${LINK_ALPHA * nodeFade})`)
 				.linkWidth(0.6)
 				.enablePointerInteraction(false)
 				.enableZoomInteraction(false)
@@ -58,17 +72,27 @@ export function mountObsidianGraphBackground(
 
 			window.addEventListener("resize", onResize);
 
+			const fadeStart = performance.now();
+			function tickNodeFade() {
+				if (cancelled || !fg) return;
+				const t = Math.min(
+					(performance.now() - fadeStart) / NODE_FADE_MS,
+					1,
+				);
+				nodeFade = smoothstep(0, 1, t);
+				if (t < 1) {
+					fadeRaf = requestAnimationFrame(tickNodeFade);
+				} else {
+					nodeFade = 1;
+					fg.autoPauseRedraw(true);
+				}
+			}
+			fadeRaf = requestAnimationFrame(tickNodeFade);
+
 			const duration = 2000;
 			const start = performance.now();
 			const kStart = 1;
 			const kEnd = 1.2;
-
-			function smoothstep(edge0: number, edge1: number, x: number) {
-				// Scale, bias and saturate x to 0..1 range
-				x = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
-				// Evaluate polynomial
-				return x * x * (3 - 2 * x);
-			}
 
 			const intervalId = setInterval(() => {
 				const now = performance.now();
@@ -87,6 +111,7 @@ export function mountObsidianGraphBackground(
 
 	return () => {
 		cancelled = true;
+		cancelAnimationFrame(fadeRaf);
 		window.removeEventListener("resize", onResize);
 		if (fg) {
 			fg._destructor();
