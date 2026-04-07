@@ -2,11 +2,11 @@
 import { getCollection } from "astro:content";
 import Hero from "../components/Hero.astro";
 import Nav from "../components/Nav.astro";
+import ObsidianGraphBackground from "../components/ObsidianGraphBackground";
 import PostList from "../components/PostList.astro";
 import StuffGrid from "../components/StuffGrid.astro";
 import { hero, navItems, parsePost, stuff, type Post } from "../data/home";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ObsidianGraphBackground from "../components/ObsidianGraphBackground";
 
 const allPosts = await getCollection("posts");
 

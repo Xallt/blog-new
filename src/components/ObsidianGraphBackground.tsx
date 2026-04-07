@@ -27,14 +27,6 @@ function useViewportSize(): { width: number; height: number } {
 	return dims;
 }
 
-function fitGraphToViewport(
-	fg: ForceGraphMethods | undefined,
-	durationMs: number,
-	paddingPx: number,
-) {
-	fg?.zoomToFit(durationMs, paddingPx);
-}
-
 export default function ObsidianGraphBackground() {
 	const { width, height } = useViewportSize();
 	const [data, setData] = useState<GraphPayload | null>(null);
@@ -63,19 +55,6 @@ export default function ObsidianGraphBackground() {
 	const nodeColor = useCallback(() => NODE, []);
 	const linkColor = useCallback(() => LINK, []);
 
-	const onEngineStop = useCallback(() => {
-		fitGraphToViewport(fgRef.current, 600, 4);
-	}, []);
-
-	// Refit when the viewport changes (ref callback runs after canvas resizes).
-	useEffect(() => {
-		if (!data || width < 2 || height < 2) return;
-		const id = requestAnimationFrame(() => {
-			fitGraphToViewport(fgRef.current, 0, 4);
-		});
-		return () => cancelAnimationFrame(id);
-	}, [data, width, height]);
-
 	if (!data || width < 2 || height < 2) {
 		return null;
 	}
@@ -99,7 +78,6 @@ export default function ObsidianGraphBackground() {
 				enablePanInteraction={false}
 				warmupTicks={40}
 				cooldownTicks={160}
-				onEngineStop={onEngineStop}
 				d3VelocityDecay={0.45}
 			/>
 		</div>
