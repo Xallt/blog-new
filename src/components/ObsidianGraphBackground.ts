@@ -100,6 +100,7 @@ function createAmbientForce() {
 /** Mount force-graph into `container`. Returns teardown for tests or view transitions. */
 export function mountObsidianGraphBackground(
 	container: HTMLElement,
+	baseUrl: string = "/",
 ): () => void {
 	let fg: ForceGraphInstance | null = null;
 	let cancelled = false;
@@ -167,7 +168,7 @@ export function mountObsidianGraphBackground(
 		hasPrevGraphSample = false;
 	}
 
-	fetch("/obsidian-graph.json")
+	fetch(`${baseUrl}obsidian-graph.json`)
 		.then((r) => (r.ok ? r.json() : null))
 		.then((json: GraphPayload | null) => {
 			if (
