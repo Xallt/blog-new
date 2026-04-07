@@ -7,7 +7,7 @@ type GraphPayload = { nodes: ForceNode[]; links: ForceLink[] };
 type ForceGraphInstance = InstanceType<typeof ForceGraph>;
 
 const BG = "rgb(27, 27, 30)";
-const NODE = "rgba(130, 145, 170, 0.42)";
+const NODE = "rgba(130, 145, 170, 0.12)";
 const LINK = "rgba(85, 95, 115, 0.22)";
 
 /** Mount force-graph into `container`. Returns teardown for tests or view transitions. */
@@ -57,6 +57,31 @@ export function mountObsidianGraphBackground(
 				.d3VelocityDecay(0.45);
 
 			window.addEventListener("resize", onResize);
+
+			const duration = 2000;
+			const start = performance.now();
+			const kStart = 1;
+			const kEnd = 1.2;
+
+			function smoothstep(edge0: number, edge1: number, x: number) {
+				// Scale, bias and saturate x to 0..1 range
+				x = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+				// Evaluate polynomial
+				return x * x * (3 - 2 * x);
+			}
+
+			const intervalId = setInterval(() => {
+				const now = performance.now();
+				const elapsed = now - start;
+				const t = Math.min(elapsed / duration, 1);
+				const smoothT = smoothstep(0, 1, t);
+				const k = kStart + (kEnd - kStart) * smoothT;
+				fg?.zoom(k);
+
+				if (t >= 1) {
+					clearInterval(intervalId);
+				}
+			}, 10);
 		})
 		.catch(() => { });
 
