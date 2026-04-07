@@ -61,10 +61,10 @@ export interface Stuff {
 }
 
 export const navItems: NavItem[] = [
-	{ label: "Home", href: "/" },
-	{ label: "Posts", href: "/posts" },
-	{ label: "Stuff", href: "/stuff" },
-	{ label: "About", href: "/about" },
+	{ label: "Home", href: import.meta.env.BASE_URL },
+	{ label: "Posts", href: `${import.meta.env.BASE_URL}posts` },
+	{ label: "Stuff", href: `${import.meta.env.BASE_URL}stuff` },
+	{ label: "About", href: `${import.meta.env.BASE_URL}about` },
 ];
 
 export const hero: HeroData = {
