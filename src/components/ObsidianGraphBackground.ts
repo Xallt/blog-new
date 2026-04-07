@@ -168,7 +168,7 @@ export function mountObsidianGraphBackground(
 		hasPrevGraphSample = false;
 	}
 
-	fetch(`${baseUrl}obsidian-graph.json`)
+	fetch(`${baseUrl.replace(/\/?$/, "/")}obsidian-graph.json`)
 		.then((r) => (r.ok ? r.json() : null))
 		.then((json: GraphPayload | null) => {
 			if (
