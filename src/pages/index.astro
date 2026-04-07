@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import Hero from "../components/Hero.astro";
 import Nav from "../components/Nav.astro";
-import ObsidianGraphBackground from "../components/ObsidianGraphBackground";
 import PostList from "../components/PostList.astro";
 import StuffGrid from "../components/StuffGrid.astro";
 import { hero, navItems, parsePost, stuff, type Post } from "../data/home";
@@ -19,7 +18,7 @@ const previewStuff = stuff.filter((s) => s.image != null).slice(0, 3);
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">
-	<ObsidianGraphBackground client:only="react" />
+	<div id="obsidian-graph-bg" class="obsidian-graph-bg" aria-hidden="true"></div>
 	<div class="page page--with-graph">
 		<Nav items={navItems} />
 		<Hero hero={hero} />
@@ -39,6 +38,13 @@ const previewStuff = stuff.filter((s) => s.image != null).slice(0, 3);
 		</section>
 	</div>
 </BaseLayout>
+
+<script>
+	import { mountObsidianGraphBackground } from "../components/ObsidianGraphBackground.ts";
+
+	const el = document.getElementById("obsidian-graph-bg");
+	if (el) mountObsidianGraphBackground(el);
+</script>
 
 <style is:global>
 	.obsidian-graph-bg {

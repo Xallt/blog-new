@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Export obsidiantools vault.graph to JSON for react-force-graph.
+Export obsidiantools vault.graph to JSON for force-graph.
 
   cd scripts/obsidian-graph-export
   uv sync
@@ -72,7 +72,7 @@ def subgraph_by_frontmatter_types(vault, G, allowed_types: frozenset[str]):
 
 
 def graph_to_force_json(G, *, skip_self_loops: bool = True) -> dict:
-    """Build { nodes, links } for react-force-graph (string ids)."""
+    """Build { nodes, links } for force-graph (string ids)."""
     nodes_out = []
     for n in G.nodes():
         nid = str(n)

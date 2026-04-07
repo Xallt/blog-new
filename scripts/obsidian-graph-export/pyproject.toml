@@ -1,7 +1,7 @@
 [project]
 name = "obsidian-graph-export"
 version = "0.1.0"
-description = "Export Obsidian vault link graph to JSON for react-force-graph"
+description = "Export Obsidian vault link graph to JSON for force-graph"
 requires-python = ">=3.11"
 dependencies = [
     "obsidiantools>=0.11",
