@@ -4,7 +4,6 @@ categories:
   - Programming
   - How-to
 pubDate: 2025-07-05 12:55:02 +0400
-math: true
 title: C++ Programming setup for noobs
 tags:
   - cmake

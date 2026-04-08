@@ -11,7 +11,6 @@ tags:
 categories:
   - Research
   - Paper-Overview
-math: "true"
 ---
 
 Sometimes I read papers about NeRF. Yeah, what a shock.

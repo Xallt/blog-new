@@ -8,7 +8,6 @@ tags:
 categories:
 - Research
 - Paper-Overview
-math: 'true'
 pubDate: 2023-11-16 21:29 +0400
 ---
 ## Introduction

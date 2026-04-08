@@ -7,7 +7,6 @@ tags:
     - cmake
     - c++
 pubDate: 2025-06-11 21:57:06 +0400
-math: true
 title: CMake is a pain in the ass
 ---
 
