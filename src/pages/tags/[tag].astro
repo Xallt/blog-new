@@ -1,0 +1,52 @@
+---
+import Nav from "../../components/Nav.astro";
+import PostList from "../../components/PostList.astro";
+import {
+	getAllPosts,
+	getUrl,
+	navItems,
+	parsePost,
+	type Post,
+} from "../../data/home";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+	const allPosts = await getAllPosts();
+	const tags = new Set<string>();
+	for (const post of allPosts) {
+		for (const t of post.data.tags) {
+			tags.add(t);
+		}
+	}
+	return [...tags].map((tag) => ({ params: { tag } }));
+}
+
+const { tag: tagParam } = Astro.params;
+if (tagParam == null) {
+	return Astro.redirect(getUrl("posts"));
+}
+
+const allPosts = await getAllPosts();
+const posts: Post[] = allPosts
+	.filter((entry) => entry.data.tags.includes(tagParam))
+	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+	.map((entry) => parsePost(entry));
+---
+
+<BaseLayout title={`Posts tagged “${tagParam}” — Dmitry Shabat`}>
+	<div class="page">
+		<Nav items={navItems} />
+		<section class="section" aria-labelledby="tag-posts-heading">
+			<h2 id="tag-posts-heading" class="posts-section-title">
+				#{tagParam}
+			</h2>
+			<PostList posts={posts} />
+		</section>
+	</div>
+</BaseLayout>
+
+<style>
+	.section {
+		margin-bottom: var(--space-xl);
+	}
+</style>

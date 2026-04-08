@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import Nav from "../../components/Nav.astro";
+import Tag from "../../components/Tag.astro";
 import { navItems, parsePost } from "../../data/home";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -32,7 +33,9 @@ const { Content } = await render(post);
                         {tags.length > 0 && (
                             <ul class="post-page-tags">
                                 {tags.map((tag) => (
-                                    <li>{tag}</li>
+                                    <li>
+                                        <Tag tag={tag} />
+                                    </li>
                                 ))}
                             </ul>
                         )}
@@ -93,8 +96,4 @@ const { Content } = await render(post);
         justify-content: center;
     }
 
-    .post-page-tags li::before {
-        content: "#";
-        opacity: 0.65;
-    }
 </style>

@@ -1,5 +1,6 @@
 ---
 import type { Post } from "../data/home";
+import Tag from "./Tag.astro";
 
 interface Props {
     post: Post;
@@ -17,7 +18,9 @@ const { post } = Astro.props;
             post.tags.length > 0 && (
                 <ul class="post-tags">
                     {post.tags.map((tag) => (
-                        <li>{tag}</li>
+                        <li>
+                            <Tag tag={tag} />
+                        </li>
                     ))}
                 </ul>
             )
@@ -86,11 +89,6 @@ const { post } = Astro.props;
         font-family: var(--font-family-base);
         font-size: 0.9rem;
         color: var(--text-muted-color);
-    }
-
-    .post-tags li::before {
-        content: "#";
-        opacity: 0.7;
     }
 
     @media (max-width: 520px) {

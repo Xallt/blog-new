@@ -75,6 +75,10 @@ export function getUrl(path: string): string {
 	return `${baseUrl}/${path}`;
 }
 
+export function tagPageUrl(tag: string): string {
+	return getUrl(`tags/${encodeURIComponent(tag)}`);
+}
+
 export const navItems: NavItem[] = [
 	{ label: "Home", href: getUrl("") },
 	{ label: "Posts", href: getUrl("posts") },
