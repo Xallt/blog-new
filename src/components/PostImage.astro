@@ -1,0 +1,58 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+export interface Props {
+	src: ImageMetadata | string;
+	alt: string;
+	width?: number;
+	height?: number;
+	caption?: string;
+}
+
+const { src, alt, width, height, caption } = Astro.props;
+const isGifUrl = typeof src === "string";
+
+const rasterAttrs: { width?: number; height?: number } = {};
+if (width !== undefined) rasterAttrs.width = width;
+if (height !== undefined) rasterAttrs.height = height;
+---
+
+<figure class="post-figure">
+	{
+		isGifUrl ? (
+			<img
+				src={src}
+				alt={alt}
+				width={width}
+				height={height}
+				loading="lazy"
+				decoding="async"
+			/>
+		) : (
+			<Image src={src} alt={alt} loading="lazy" {...rasterAttrs} />
+		)
+	}
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+	.post-figure {
+		margin: var(--space-md) auto;
+		max-width: 100%;
+		text-align: center;
+	}
+
+	.post-figure :global(img) {
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	figcaption {
+		margin-top: var(--space-xs);
+		font-size: 0.7em;
+		color: var(--text-muted-color);
+		/* font-style: italic; */
+		text-align: center;
+	}
+</style>

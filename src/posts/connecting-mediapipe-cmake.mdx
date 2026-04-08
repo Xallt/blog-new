@@ -14,7 +14,11 @@ categories:
   - Programming
   - Projects
 ---
+import postImg1 from "../assets/img/connecting_mediapipe_cmake/handtracking_pbtxt.png";
+import postImg0 from "../assets/img/connecting_mediapipe_cmake/mediapipe_handtracking_graph.png";
 import Callout from '../components/Callout.astro';
+import PostImage from '../components/PostImage.astro';
+
 Skip to [here](#whats-so-cool-about-mediapipe) if you want the juicy technical insights right away
 
 ## Motivation
@@ -47,7 +51,10 @@ This post in particular is about the first stage of the development of this app,
 
 |Visualization of a graph|Snippet of this graph's definition|
 |:-:|:-:|
-|![Mediapipe handtracking graph](../assets/img/connecting_mediapipe_cmake/mediapipe_handtracking_graph.png)|![how this graph is defined in text](../assets/img/connecting_mediapipe_cmake/handtracking_pbtxt.png)|
+<div class="post-img-row">
+  <PostImage src={postImg0} alt="Mediapipe handtracking graph" />
+  <PostImage src={postImg1} alt="how this graph is defined in text" />
+</div>
 
 
 > While looking for other Mediapipe tools, I found out you can [upload your profiling log](https://github.com/google/mediapipe/blob/master/docs/tools/tracing_and_profiling.md) to [viz.mediapipe.dev](https://viz.mediapipe.dev) and it will visualize both the graph, all the statistics, and also *all intermediate states of each node?* (not sure). Whatever that does, it looks fantastic
@@ -73,7 +80,7 @@ The Python `mp` library only provides **CPU** inference of models
 If your app is in C++ or if you want fast GPU inference, the next section is for you.
 
 ### Actually integrating Mediapipe into C++
-If you want to have Mediapipe as a dependency in your project in any way, you **WILL** have to read the [Mediapipe source code](https://github.com/google/mediapipe). Sometimes C/C++, sometimes Protobuf `.proto`{: .filepath} files, Bazel `BUILD`{: .filepath} files, sometimes even Java code (idk why). 
+If you want to have Mediapipe as a dependency in your project in any way, you **WILL** have to read the [Mediapipe source code](https://github.com/google/mediapipe). Sometimes C/C++, sometimes Protobuf `.proto` files, Bazel `BUILD` files, sometimes even Java code (idk why). 
 
 And I bet you'll have to make a fork of Mediapipe and add some changes to the internal code/build files. It was inevitable for me, so I accepted the path of tweaking the source code.
 
@@ -90,7 +97,19 @@ You can either have your project built with [Bazel](https://bazel.build/), which
 
 I personally wanted to work with [CMake](https://cmake.org/) for this project (because it's widely used and probably the hardest to understand), so I went with the second option, which resulted in about 10 days of pain where I learned a lot about CMake, Bazel, and how C++ compilers work. But I got it to work!! 
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I WON, I FUCKING WON. <br>I GOT fudging MEDIAPIPE BAZEL-BUILT SHARED LIBRARY TO WORK WITH MY CMAKE PROJECT I&#39;m so happy. <br><br>I started trying to link it together like 10 days ago. And I learned so much trying to make it work. Would definitely make a great post <a href="https://t.co/Za4ElgjvGE">pic.twitter.com/Za4ElgjvGE</a></p>&mdash; Mitya Shabat (@Xallt_) <a href="https://twitter.com/Xallt_/status/1717627719503036667?ref_src=twsrc%5Etfw">October 26, 2023</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet">
+  <p lang="en" dir="ltr">
+    I WON, I FUCKING WON. 
+    <br />
+    I GOT fudging MEDIAPIPE BAZEL-BUILT SHARED LIBRARY TO WORK WITH MY CMAKE PROJECT I&#39;m so happy. 
+    <br />
+    <br />
+    I **started** trying to link it together like 10 days ago. And I learned so much trying to make it work. Would definitely make a great post 
+    <a href="https://t.co/Za4ElgjvGE">pic.twitter.com/Za4ElgjvGE</a>
+  </p>
+  &mdash; Mitya Shabat (@Xallt_) <a href="https://twitter.com/Xallt_/status/1717627719503036667?ref_src=twsrc%5Etfw">October 26, 2023</a>
+</blockquote> 
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 look at how happy I was 
 
 If you want to actually understand the intricacies of C++ linking and Mediapipe, I recommend you go through this painful experience yourself 🙃.
@@ -109,11 +128,11 @@ So, to be able to export the `RunMPPGraph()` function, but also for the Mediapip
 1. **fork** & clone & compile & run Mediapipe with their instructions: 
 	- First, the [Hello World example](https://developers.google.com/mediapipe/framework/getting_started/install)
 	- Then the [Hand Tracking example](https://developers.google.com/mediapipe/framework/getting_started/cpp)
-2. Break up the `demo_run_graph_main_gpu.cc`{: .filepath} file into:
-	- `run_graph_main.h`{: .filepath} with header guards & the declaration of the `RunMPPGraph()`
-	- `run_graph_main.cc`{: .filepath} with the source code for the `RunMPPGraph()`
-	- `demo_run_graph_main_gpu.cc`{: .filepath} with the `main()` from the older version of this file
-	- And create an intermediate `cc_library` for `run_graph_main.cc`{: .filepath} inside of this [BUILD](https://github.com/google/mediapipe/blob/master/mediapipe/examples/desktop/BUILD) file accordingly
+2. Break up the `demo_run_graph_main_gpu.cc` file into:
+	- `run_graph_main.h` with header guards & the declaration of the `RunMPPGraph()`
+	- `run_graph_main.cc` with the source code for the `RunMPPGraph()`
+	- `demo_run_graph_main_gpu.cc` with the `main()` from the older version of this file
+	- And create an intermediate `cc_library` for `run_graph_main.cc` inside of this [BUILD](https://github.com/google/mediapipe/blob/master/mediapipe/examples/desktop/BUILD) file accordingly
 3. Create a `run_graph_main_linux.so` target in the BUILD file with the Bazel rule `cc_binary` and flags `linkshared=1`, also add `alwayslink=1` to the  `run_graph_main` Bazel target (important for when we'll export the shared library)
 4. Also, I changed the output result of `RunMPPGraph()` to be a `bool` instead of `absl::Status` so that I don't have to have Abseil as a dependency in my project
 
@@ -125,7 +144,7 @@ There will be lots of ups & downs in this process, you'll have a fair deal of is
 Bazel isn't capable of compiling static libraries without a main() function, so we are forced to make a **shared** library
 </Callout>
 
-Ok, at this stage we should have something called `run_graph_main_linux.so`{: .filepath } somewhere in  the `bazel-bin`{: .filepath} directory. Now let's try to link it to our small CMake project
+Ok, at this stage we should have something called `run_graph_main_linux.so` somewhere in  the `bazel-bin` directory. Now let's try to link it to our small CMake project
 
 #### Linking the Bazel-built shared library to a CMake project
 Now, let's get to actually creating a CMake project with this shared library linked 🚀
@@ -137,14 +156,14 @@ Otherwise, while on a rush of excitement you're making lots of changes, one of t
 </Callout>
 
 Anyway, here's the steps I took:
-1. First, create a very simple Hello World `main.py`{: .filepath } -- just to confirm that something trivial compiles
-2. Then, with the help of the internet of ChatGPT, create a CMake file that will compile this trivial `main.py`{: .filepath }. CMake boilerplates are impossible to memorize, so yeah.
+1. First, create a very simple Hello World `main.py` -- just to confirm that something trivial compiles
+2. Then, with the help of the internet of ChatGPT, create a CMake file that will compile this trivial `main.py`. CMake boilerplates are impossible to memorize, so yeah.
   Also, here's a great intro post to CMake: [https://www.internalpointers.com/post/modern-cmake-beginner-introduction](https://www.internalpointers.com/post/modern-cmake-beginner-introduction). There's also lots&lots of links to other posts in the bottom, maybe one of those will help you a lot.
-3. Add the `run_graph_main.h`{: .filepath} header and `run_graph_main_linux.so`{: .filepath} to CMake, check that it compiles
+3. Add the `run_graph_main.h` header and `run_graph_main_linux.so` to CMake, check that it compiles
 4. Add `#include "run_graph_gpu.h"`
 5. Call `RunMPPGraph()`
 
-The steps 4&5 are the most problematic ones -- all the issues with file positioning, linking problems, etc. will come out here. Also the suddenly the model checkpoint can't be found, the `.pbtxt`{: .filepath} graph definition can't be found, etc.\
+The steps 4&5 are the most problematic ones -- all the issues with file positioning, linking problems, etc. will come out here. Also the suddenly the model checkpoint can't be found, the `.pbtxt` graph definition can't be found, etc.\
 Good luck with figuring this out! 🙃
 
 While debugging all the issues with missing libraries and conflicting library versions, two tools helped me out:
@@ -153,7 +172,7 @@ While debugging all the issues with missing libraries and conflicting library ve
 
 General advice about installing libraries [here](#installing-c-libraries).
 
-Also, for some mysterious reason I **had** to have the `bazel-bin`{: .filepath} directory under where my `main`{: .filepath} executable lies? I just made a symlink, but it's still confusing, and I don't understand where in the source code it references `bazel-bin`{: .filepath} specifically:
+Also, for some mysterious reason I **had** to have the `bazel-bin` directory under where my `main` executable lies? I just made a symlink, but it's still confusing, and I don't understand where in the source code it references `bazel-bin` specifically:
 ```bash
 ln -s ../dependencies/mediapipe/bazel-bin ./bazel-bin
 ```
@@ -185,7 +204,7 @@ class SimpleMPPGraphRunner {
     void* runnerVoid;
 };
 ```
-It's basically a wrapper around the `MPPGraphRunner`, which is now entirely defined in `run_graph_gpu.cc`{: .filepath}, so now `MPPGraphRunner` isn't referenced as a type anywhere in the `run_graph_gpu.h`{: .filepath} file -- this way Abseil also isn't required.
+It's basically a wrapper around the `MPPGraphRunner`, which is now entirely defined in `run_graph_gpu.cc`, so now `MPPGraphRunner` isn't referenced as a type anywhere in the `run_graph_gpu.h` file -- this way Abseil also isn't required.
 
 The `runnerVoid` is a pointer to the `MPPGraphRunner` class that I'd handle in the source file `run_graph_gpu.cc` like this:
 ```cpp
@@ -236,7 +255,7 @@ sudo apt-get install lib{library}-dev
 ```
 Of course, I'm on an Ubuntu-based system, if you're Arch or whatever, can't help you there (but it's probably very similar).
 
-If there's a library like `libcudnn.so`{: .filepath} missing (name starts with `cu`{: .filepath}), which is basically part of CUDA, you'll probably have to go to the Nvidia website and use their installer instructions. For me it was the [CUDA 12.2 Toolkit Downloads](https://developer.nvidia.com/cuda-12-2-0-download-archive).
+If there's a library like `libcudnn.so` missing (name starts with `cu`), which is basically part of CUDA, you'll probably have to go to the Nvidia website and use their installer instructions. For me it was the [CUDA 12.2 Toolkit Downloads](https://developer.nvidia.com/cuda-12-2-0-download-archive).
 
 Sometimes you may even have an issue where none of the library versions from your package manager work -- whatever you install the build process complains that **something is of the wrong version**. \
 Aaand you can always just **build from source**! It's a lot easier than I initially assumed.
@@ -257,15 +276,15 @@ make install
 ```
 Is one you'll be very familiar with once you work with more CMake projects -- it's THE commands for building C++ libraries and installing them into your system. 
 
-Maybe at some point you learned about `Makefile`{: .filepath}s separately from CMake -- it's a very simple minimalistic build system, which is good for beginners and small projects. CMake is good for bigger projects with dependencies that are harder to manage manually, and all it does -- **it literally just generates Makefiles for your project**. So, the logic is:
-1. Create a `build`{: .filepath} directory where the `Makefile`{: .filepath}s will be located together with all the helper files
-2. `cd` into it, and call `cmake ..` which just says "generate **Makefile**s in this directory using the `CMakeLists.txt`{: .filepath} from the directory `..`{: .filepath}"
-3. Then, run the `install` instruction from the Makefile, that compiles everything, and adds the header files (like `opencv2/videoio.hpp`{: .filepath} which is basically the same as `.h`) and shared libraries (like `libopencv_videoio.so`{: .filepath}) to the directories where they're supposed to be
+Maybe at some point you learned about `Makefile`s separately from CMake -- it's a very simple minimalistic build system, which is good for beginners and small projects. CMake is good for bigger projects with dependencies that are harder to manage manually, and all it does -- **it literally just generates Makefiles for your project**. So, the logic is:
+1. Create a `build` directory where the `Makefile`s will be located together with all the helper files
+2. `cd` into it, and call `cmake ..` which just says "generate **Makefile**s in this directory using the `CMakeLists.txt` from the directory `..`"
+3. Then, run the `install` instruction from the Makefile, that compiles everything, and adds the header files (like `opencv2/videoio.hpp` which is basically the same as `.h`) and shared libraries (like `libopencv_videoio.so`) to the directories where they're supposed to be
 
 ### Wow, following installation instructions is useful
-In Mediapipe installation instructions for C++, there's this [first section of installation instructions](https://developers.google.com/mediapipe/framework/getting_started/install#installing_on_debian_and_ubuntu), and in the 3rd step they specify how you need to change the `opencv_linux.BUILD`{: .filepath} file if you have OpenCV>=4 version.
+In Mediapipe installation instructions for C++, there's this [first section of installation instructions](https://developers.google.com/mediapipe/framework/getting_started/install#installing_on_debian_and_ubuntu), and in the 3rd step they specify how you need to change the `opencv_linux.BUILD` file if you have OpenCV>=4 version.
 
-Now, on a completely unrelated note 🙃 -- when linking the `run_graph_gpu_linux.so`{: .filepath} as described in [this section](#linking-the-bazel-built-shared-library-to-a-cmake-project), and calling `RunMPPGraph()`, I got errors like:
+Now, on a completely unrelated note 🙃 -- when linking the `run_graph_gpu_linux.so` as described in [this section](#linking-the-bazel-built-shared-library-to-a-cmake-project), and calling `RunMPPGraph()`, I got errors like:
 ```bash
 (...): undefined reference to cv::VideoCapture::VideoCapture(int)
 
@@ -273,7 +292,7 @@ Now, on a completely unrelated note 🙃 -- when linking the `run_graph_gpu_linu
 
 (...): undefined reference to cv::String::deallocate() ...
 ```
-And I checked with `ldd` that the linking inside of `run_graph_gpu_linux.so`{: .filepath} point to the correct shared OpenCV libraries. At this point I've already looked at the instructions from Mediapipe to change their OpenCV dependency BUILD file, but I scratched that -- it only changed the include directories for the headers, and headers don't contain function definitions, so changing that now won't add any function references that the linking complain about above.
+And I checked with `ldd` that the linking inside of `run_graph_gpu_linux.so` point to the correct shared OpenCV libraries. At this point I've already looked at the instructions from Mediapipe to change their OpenCV dependency BUILD file, but I scratched that -- it only changed the include directories for the headers, and headers don't contain function definitions, so changing that now won't add any function references that the linking complain about above.
 
 WRONG -- apparently by default (if you have OpenCV>=4) it uses headers of an "older" version, that won't break during compilation of a library, but will notice that something is wrong once you try to link those with functions (some kind of mismatch between older headers and newer libraries' function interfaces?). 
 

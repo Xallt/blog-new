@@ -67,11 +67,19 @@ export interface Stuff {
 	listed: boolean;
 }
 
+export function getUrl(path: string): string {
+	const baseUrl = import.meta.env.BASE_URL;
+	if (baseUrl.endsWith("/")) {
+		return `${baseUrl}${path}`;
+	}
+	return `${baseUrl}/${path}`;
+}
+
 export const navItems: NavItem[] = [
-	{ label: "Home", href: import.meta.env.BASE_URL },
-	{ label: "Posts", href: `${import.meta.env.BASE_URL}posts` },
-	{ label: "Stuff", href: `${import.meta.env.BASE_URL}stuff` },
-	{ label: "About", href: `${import.meta.env.BASE_URL}about` },
+	{ label: "Home", href: getUrl("") },
+	{ label: "Posts", href: getUrl("posts") },
+	{ label: "Stuff", href: getUrl("stuff") },
+	{ label: "About", href: getUrl("about") },
 ];
 
 export const hero: HeroData = {

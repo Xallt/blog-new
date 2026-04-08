@@ -129,3 +129,19 @@ blockquote {
 	border: 0;
 }
 
+/* Side-by-side figures from Jekyll-style markdown tables (see scripts/jekyll_images_to_mdx_image.py) */
+.post-img-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-sm);
+	justify-content: center;
+	align-items: flex-start;
+	margin: var(--space-md) 0;
+}
+
+.post-img-row :global(.post-figure) {
+	margin: 0;
+	flex: 1 1 12rem;
+	min-width: 0;
+}
+

@@ -11,6 +11,13 @@ categories:
 pubDate: 2023-11-16 21:29 +0400
 ---
 import Callout from '../components/Callout.astro';
+import PostImage from '../components/PostImage.astro';
+import postImg0 from "../assets/img/lrm-overview/Pasted image 20231117002052.png";
+import postImg1 from "../assets/img/lrm-overview/Pasted image 20231117102853.png";
+import postImg2 from "../assets/img/lrm-overview/Pasted image 20231117002449.png";
+import postImg3 from "../assets/img/lrm-overview/Pasted image 20231117104035.png";
+import postImg4 from "../assets/img/lrm-overview/Pasted image 20231117104843.png";
+
 ## Introduction
 I've been updating myself on the most major advancements in the field of 3D reconstruction and text-to-3D over the past year, and I've seen **lots** of tricks to improve performance, reformulate the task in various ways, inserting components from different fields of Machine Learning, and so on.
 
@@ -26,8 +33,7 @@ In this paper we're simply training a model that, given a single input image, pr
 
 Let's pull up the image describing their model architecture:
 
-![lrm architecture](../assets/img/lrm-overview/Pasted%20image%2020231117002052.png)
-_LRM architecture from the paper_
+<PostImage src={postImg0} alt="lrm architecture" caption="LRM architecture from the paper" />
 
 This is just for reference -- it's *some* kind of neural network that just does "Image -> NeRF". How a NeRF can be regressed with a model I'll explain [here](#nerf-for-3d-representation).
 
@@ -97,8 +103,7 @@ Now model architecture itself -- it has crucial ideas too.\
 Lots of scary blocks, so let's go component by component.
 
 ## NeRF for 3D representation
-![nerf representation](../assets/img/lrm-overview/Pasted%20image%2020231117102853.png)
-_A NeRF is predicted via regressing triplanes_
+<PostImage src={postImg1} alt="nerf representation" caption="A NeRF is predicted via regressing triplanes" />
 
 Just like *most* of the current state-of-the-art Image-to-3D/Text-to-3D approaches, this paper generates an object represented as a NeRF. It does so by **regressing the planes** for the **Triplane Encoder** that is introduced in [TensoRF](https://apchenstu.github.io/TensoRF/).
 
@@ -108,14 +113,12 @@ The MLP is the same for every object -- only the Triplane features change, there
 
 ## Image Encoder
 
-![image encoder architecture](../assets/img/lrm-overview/Pasted%20image%2020231117002449.png)
-_Image encoder architecture_
+<PostImage src={postImg2} alt="image encoder architecture" caption="Image encoder architecture" />
 
 Almost always when processing a single image with some type of Neural Network, we want to extract *meaningful* features for future processing. This paper goes the **Transfer Learning** path and just uses the image encoder from [DiNO](https://arxiv.org/abs/2104.14294) (very powerful image embedder **trained with self-supervision**). Not much else to describe here.
 
 ## Injecting image features into the Triplane
-![predicting the triplanes from image features](../assets/img/lrm-overview/Pasted%20image%2020231117104035.png)
-_Cross-Attention to integrate image features into the triplane_
+<PostImage src={postImg3} alt="predicting the triplanes from image features" caption="Cross-Attention to integrate image features into the triplane" />
 
 So, on the left here you can see **Learnable positional encodings** with the shape $(3 \times 32 \times 32) \times 1024$ -- you can maybe guess that these positional embeddings are also a TensoRF Triplane, i.e. the 3 images comprising such a Triplane. I called this section **"Injecting image features into the Triplane"** because we aren't really predicting those Triplane images -- we're **modifying existing ones via Cross-Attention**.
 
@@ -123,14 +126,13 @@ The encoded camera parameters are also injected in this decoder, though I don't 
 
 Looking at how this transformer with Cross-Attention is implemented isn't really that informative:
 
-![transformer formulas](../assets/img/lrm-overview/Pasted%20image%2020231117104843.png)
-_The formulas for a single Image-to-Triplane layer_
+<PostImage src={postImg4} alt="transformer formulas" caption="The formulas for a single Image-to-Triplane layer" />
 
 BUUT knowing that there's 16 layers of this Cross/Self-Attention does make an impression that we're **meta-learning Score Distillation Sampling**, i.e. the Attention layers **simulate the distillation of image features** into 3D.
 
 <Callout type="info">
 This is the paper I was thinking about: https://arxiv.org/abs/2212.07677 \
-Basically authors show that Transformers out of Self-Attention blocks resemble *"mesa-optimizers"*, i.e. modify the input features at every layer to minimize some objective.
+Basically authors show that Transformers out of Self-Attention blocks resemble *"mesa-optimizers"*, i.e. modify the input features at every layer to minimize some objective. \
 Didn't read it through though, just saw a summary of this somewhere 🤪
 </Callout>
 

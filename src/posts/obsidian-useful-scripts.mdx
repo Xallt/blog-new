@@ -10,11 +10,20 @@ categories:
   - Miscellaneous
   - Task Management
 ---
+import PostImage from '../components/PostImage.astro';
+import postImg0 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122200039.png";
+import postImg1 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122200616.png";
+import postImg2 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122200734.png";
+import postImg3 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122200838.png";
+import postImg4 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122200909.png";
+import postImg5 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122200932.png";
+import postImg6 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122201006.png";
+import postImg7 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122201028.png";
+import postImg8 from "../assets/img/obsidian_useful_scripts/Pasted image 20231122201054.png";
 
 Alright, in this post I'd like to share some Obsidian templates & scripts that have piled up over the busy year that I had.
 
-![my vault](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200039.png){: w="500"}
-_My vault :)_
+<PostImage src={postImg0} alt="my vault" width={500} caption="My vault :)" />
 
 If you want to see the templates right away, go [here](#the-templates).\
 If you want to see my other scripts, go [here](#separate-scripts).
@@ -77,7 +86,7 @@ LIST FROM [[]]
 ```
 ````
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200616.png){: w="400"}
+<PostImage src={postImg1} alt="" width={400} />
 
 - - -
 The link/tool/dataset/library template (only the type property changes)
@@ -92,7 +101,7 @@ link:
 ## Link: `= this.file.frontmatter.link`
 ```
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200734.png){: w="400"}
+<PostImage src={postImg2} alt="" width={400} />
 
 - - -
 The "paper" template
@@ -126,7 +135,7 @@ if (pairs.length > 0) {
 ```
 ````
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200838.png){: w="400"}
+<PostImage src={postImg3} alt="" width={400} />
 
 - - -
 The project template
@@ -140,7 +149,7 @@ type: project
 - [ ] 
 ```
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200909.png){: w="400"}
+<PostImage src={postImg4} alt="" width={400} />
 
 ## Separate scripts
 
@@ -157,7 +166,7 @@ group by done
 ```
 ````
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122200932.png){: w="400"}
+<PostImage src={postImg5} alt="" width={400} />
 
 - - -
 Listing all tasks from all projects (except for those with property “hide: true“ or “completed: true“)
@@ -226,7 +235,7 @@ for (let i = 0; i < tasks_due_grouped.length; i += 1) {
 ```
 ````
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122201006.png){: w="400"}
+<PostImage src={postImg6} alt="" width={400} />
 
 ---
 
@@ -272,7 +281,7 @@ function getParentDescription(task) {
  ```
 ````
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122201028.png){: w="400"}
+<PostImage src={postImg7} alt="" width={400} />
 
 ---
 
@@ -309,4 +318,4 @@ dv.taskList([leafUncompletedTasks[taskSelectedNum]]);
 ````
 
 
-![](../assets/img/obsidian_useful_scripts/Pasted%20image%2020231122201054.png){: w="400"}
+<PostImage src={postImg8} alt="" width={400} />

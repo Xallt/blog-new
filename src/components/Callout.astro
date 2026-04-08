@@ -8,7 +8,7 @@
  */
 import { useFaIcon } from "./useFaIcon";
 
-export type PromptType = "tip" | "info" | "warning" | "danger";
+export type PromptType = "tip" | "info" | "warning" | "danger" | "default";
 
 export interface Props {
     type?: PromptType;
@@ -17,23 +17,33 @@ export interface Props {
 const { type = "info" }: Props = Astro.props;
 
 /** FA-style icon names passed to `useFaIcon` (Chirpy: tip → regular lightbulb; info/warning → circle-exclamation; danger → triangle-exclamation). */
-const PROMPT_FA_ICONS: Record<PromptType, string> = {
+const PROMPT_FA_ICONS: Record<PromptType, string | undefined> = {
     tip: "regular/lightbulb",
     info: "solid/circle-exclamation",
     warning: "solid/circle-exclamation",
     danger: "solid/triangle-exclamation",
+    default: undefined,
 };
 
 const iconName = PROMPT_FA_ICONS[type];
-const iconSrc = useFaIcon(iconName);
+const iconSrc = iconName ? useFaIcon(iconName) : undefined;
 ---
 
 <blockquote class:list={["chirpy-callout", `prompt-${type}`]}>
-    <span class="chirpy-callout__icon" aria-hidden="true">
-        <span
-            class="chirpy-callout__glyph"
-            style={`--fa-icon-src: url(${JSON.stringify(iconSrc)})`}></span>
-    </span>
+    {
+        type !== "default" && (
+            <span class="chirpy-callout__icon" aria-hidden="true">
+                <span
+                    class="chirpy-callout__glyph"
+                    style={
+                        iconSrc
+                            ? `--fa-icon-src: url(${JSON.stringify(iconSrc)})`
+                            : undefined
+                    }
+                />
+            </span>
+        )
+    }
     <div class="chirpy-callout__body">
         <slot />
     </div>
@@ -125,6 +135,17 @@ const iconSrc = useFaIcon(iconName);
     }
     .chirpy-callout.prompt-danger {
         background-color: var(--prompt-danger-bg);
+    }
+
+    /* Plain blockquote-style callout: left rule, muted text, no icon */
+    .chirpy-callout.prompt-default {
+        border-left: 3px solid var(--blockquote-border-color);
+        border-radius: 0;
+        background-color: transparent;
+        color: var(--blockquote-text-color);
+        padding: 0 0 0 var(--space-md);
+        margin: 0 0 var(--space-md);
+        column-gap: 0;
     }
 
     .chirpy-callout__icon {

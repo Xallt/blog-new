@@ -5,6 +5,11 @@ pubDate: 2018-05-31
 tags: [math]
 categories: [Programming, Projects]
 ---
+import PostImage from '../components/PostImage.astro';
+import postImg0 from "../assets/img/predicate-generator/BasicScreenshot.png";
+import postImg1 from "../assets/img/predicate-generator/MathScreenshot.png";
+import postImg2 from "../assets/img/predicate-generator/EngNaturalScreenshot.png";
+import postImg3 from "../assets/img/predicate-generator/MathFirstScreenshot.png";
 
 This algorithm can be used to **generate mathematical expressions**.\
 *Pretty cool, right?*
@@ -20,7 +25,11 @@ All the output is translated to LaTeX:
 |     |     |     |
 |:---:|:---:|:---:|
 |*Basic*|*Mathematical*|*English*|
-|![](../assets/img/predicate-generator/BasicScreenshot.png)|![](../assets/img/predicate-generator/MathScreenshot.png)|![](../assets/img/predicate-generator/EngNaturalScreenshot.png)|
+<div class="post-img-row">
+  <PostImage src={postImg0} alt="" />
+  <PostImage src={postImg1} alt="" />
+  <PostImage src={postImg2} alt="" />
+</div>
 
 Adjacent expressions are similar because the algorithm outputs the lines in lexigraphic order
 
@@ -28,7 +37,7 @@ Here are actually interesting generated "statements" (not all of them are true)\
 In this context variables are only non-negative integers
 
 
-![The first generated predicates](../assets/img/predicate-generator/MathFirstScreenshot.png)
+<PostImage src={postImg3} alt="The first generated predicates" />
 
 **1)** 2 is a prime number\
 **2)** <del>Every single number is prime</del>\
