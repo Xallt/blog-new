@@ -45,43 +45,45 @@ if (stuff.image) {
 ---
 
 <div class="stuff-card">
-	<a class="stuff-card-link" href={stuff.href}>
-		<div class="stuff-card-media">
-			{
-				localGifSrc && (
-					<img
-						src={localGifSrc}
-						alt={stuff.name}
-						class="stuff-card-img"
-						loading="lazy"
-					/>
-				)
-			}
-			{
-				imageMeta && (
-					<Image
-						src={imageMeta}
-						alt={stuff.name}
-						class="stuff-card-img"
-						loading="lazy"
-					/>
-				)
-			}
-		</div>
-		<h3 class="stuff-card-title">{stuff.name}</h3>
-		<p class="stuff-card-desc">{stuff.description}</p>
-	</a>
-	{stuff.githubUrl && (
-		<a
-			class="stuff-card-github"
-			href={stuff.githubUrl}
-			target="_blank"
-			rel="noopener noreferrer"
-			aria-label={`${stuff.name} on GitHub`}
-		>
-			<i class="fab fa-github"></i>
-		</a>
-	)}
+	<div class="stuff-card-media">
+		{
+			localGifSrc && (
+				<img
+					src={localGifSrc}
+					alt={stuff.name}
+					class="stuff-card-img"
+					loading="lazy"
+				/>
+			)
+		}
+		{
+			imageMeta && (
+				<Image
+					src={imageMeta}
+					alt={stuff.name}
+					class="stuff-card-img"
+					loading="lazy"
+				/>
+			)
+		}
+	</div>
+	<div class="stuff-card-title-row">
+		<h3 class="stuff-card-title">
+			<a class="stuff-card-link" href={stuff.href}>{stuff.name}</a>
+		</h3>
+		{stuff.githubUrl && (
+			<a
+				class="stuff-card-github"
+				href={stuff.githubUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label={`${stuff.name} on GitHub`}
+			>
+				<i class="fab fa-github"></i>
+			</a>
+		)}
+	</div>
+	<p class="stuff-card-desc">{stuff.description}</p>
 </div>
 
 <style>
@@ -92,6 +94,8 @@ if (stuff.image) {
 		background: var(--surface-color);
 		position: relative;
 		min-height: 8rem;
+		display: flex;
+		flex-direction: column;
 		transition:
 			border-color 0.15s ease,
 			background-color 0.15s ease;
@@ -99,19 +103,6 @@ if (stuff.image) {
 
 	.stuff-card:hover {
 		border-color: var(--text-muted-color);
-	}
-
-	.stuff-card-link {
-		display: flex;
-		flex-direction: column;
-		text-decoration: none;
-		color: inherit;
-		height: 100%;
-	}
-
-	.stuff-card-link:focus-visible {
-		outline: 2px solid var(--text-color);
-		outline-offset: 2px;
 	}
 
 	.stuff-card-media {
@@ -144,13 +135,53 @@ if (stuff.image) {
 		display: block;
 	}
 
+	.stuff-card-title-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		padding: var(--space-sm) var(--space-sm) var(--space-xs);
+	}
+
 	.stuff-card-title {
-		margin: 0 0 var(--space-xs);
-		padding: var(--space-sm) var(--space-sm) 0;
+		flex: 1;
+		margin: 0;
 		font-size: 1.3rem;
 		font-weight: 400;
-		/* leave room for the github icon so text doesn't overlap */
-		padding-right: calc(var(--space-sm) + 1.4rem + var(--space-xs));
+		line-height: 1.2;
+	}
+
+	/* Stretched link: expands to cover the whole card */
+	.stuff-card-link {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.stuff-card-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+	}
+
+	.stuff-card-link:focus-visible::after {
+		outline: 2px solid var(--text-color);
+		outline-offset: 2px;
+	}
+
+	.stuff-card-github {
+		/* sits above the stretched link overlay */
+		position: relative;
+		z-index: 1;
+		flex-shrink: 0;
+		color: var(--text-muted-color);
+		font-size: 1.3rem;
+		line-height: 1;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.stuff-card-github:hover {
+		color: var(--text-color);
 	}
 
 	.stuff-card-desc {
@@ -160,26 +191,5 @@ if (stuff.image) {
 		font-size: 1rem;
 		line-height: 1.4;
 		color: var(--text-muted-color);
-	}
-
-	.stuff-card-github {
-		position: absolute;
-		top: calc(var(--space-sm) + 8rem);
-		right: var(--space-sm);
-		color: var(--text-muted-color);
-		font-size: 1.1rem;
-		line-height: 1;
-		text-decoration: none;
-		transition: color 0.15s ease;
-		z-index: 1;
-	}
-
-	/* When there's no image the media box is hidden, so offset from top of card */
-	.stuff-card:not(:has(.stuff-card-media img)) .stuff-card-github {
-		top: var(--space-sm);
-	}
-
-	.stuff-card-github:hover {
-		color: var(--text-color);
 	}
 </style>
