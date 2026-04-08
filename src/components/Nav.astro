@@ -14,11 +14,14 @@ function normalizePath(p: string): string {
 	return p;
 }
 
+const baseRoot = normalizePath(import.meta.env.BASE_URL);
+
 function isNavActive(href: string, pathname: string): boolean {
 	const path = normalizePath(pathname);
 	const target = normalizePath(href);
-	if (target === "/") {
-		return path === "/" || path === "";
+	// Root of the app (/ or base URL like /blog-new) — exact match only
+	if (target === "/" || target === "" || target === baseRoot) {
+		return path === target;
 	}
 	return path === target || path.startsWith(`${target}/`);
 }
