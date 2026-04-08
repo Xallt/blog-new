@@ -67,8 +67,24 @@ if (stuff.image) {
 			)
 		}
 	</div>
-	<h3 class="stuff-card-title">{stuff.name}</h3>
-	<p class="stuff-card-desc">{stuff.description}</p>
+	<div class="stuff-card-body">
+		<div class="stuff-card-header">
+			<h3 class="stuff-card-title">{stuff.name}</h3>
+			{stuff.githubUrl && (
+				<a
+					class="stuff-card-github"
+					href={stuff.githubUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					aria-label={`${stuff.name} on GitHub`}
+					onclick="event.stopPropagation()"
+				>
+					<i class="fab fa-github"></i>
+				</a>
+			)}
+		</div>
+		<p class="stuff-card-desc">{stuff.description}</p>
+	</div>
 </a>
 
 <style>
@@ -127,11 +143,38 @@ if (stuff.image) {
 		display: block;
 	}
 
+	.stuff-card-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	.stuff-card-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-xs);
+		padding: var(--space-sm) var(--space-sm) 0;
+	}
+
 	.stuff-card-title {
 		margin: 0 0 var(--space-xs);
-		padding: var(--space-sm) var(--space-sm) 0;
 		font-size: 1.3rem;
 		font-weight: 400;
+	}
+
+	.stuff-card-github {
+		flex-shrink: 0;
+		margin-bottom: var(--space-xs);
+		color: var(--text-muted-color);
+		font-size: 1.1rem;
+		line-height: 1;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+
+	.stuff-card-github:hover {
+		color: var(--text-color);
 	}
 
 	.stuff-card-desc {

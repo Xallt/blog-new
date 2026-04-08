@@ -62,6 +62,8 @@ export interface Stuff {
 	description: string;
 	/** Full URL, e.g. https://o3d.xallt.dev or https://xallt.dev/noise-texture-generator */
 	href: string;
+	/** GitHub repository URL, or undefined if no public repo */
+	githubUrl: string | undefined;
 	/** Vite glob key: `/src/assets/...` (jpeg, jpg, png, or gif), or null */
 	image: string | null;
 	listed: boolean;
@@ -106,6 +108,7 @@ const _allStuff: Stuff[] = [
 		name: "Tic80 Carts",
 		description: "Games made in TIC-80, a fantasy computer",
 		href: "https://xallt.dev/tic80-carts",
+		githubUrl: "https://github.com/Xallt/TIC80-Carts",
 		image: "/src/assets/gif/tic-carts/solar_system.gif",
 		listed: true,
 	},
@@ -113,6 +116,7 @@ const _allStuff: Stuff[] = [
 		name: "My reviews",
 		description: "My opinions on various things",
 		href: "https://xallt.dev/reviews",
+		githubUrl: undefined,
 		image: "/src/assets/img/stuff-preview/reviews-screenshot.jpg",
 		listed: true,
 	},
@@ -120,6 +124,7 @@ const _allStuff: Stuff[] = [
 		name: "Noise Texture Generator",
 		description: "Procedural noise textures.",
 		href: "https://xallt.dev/noise-texture-generator",
+		githubUrl: "https://github.com/Xallt/Noise-texture-generator",
 		image: "/src/assets/img/stuff-preview/NoiseGeneration.png",
 		listed: true,
 	},
@@ -127,6 +132,7 @@ const _allStuff: Stuff[] = [
 		name: "3D Typer",
 		description: "3D text powered by 2D polygon triangulation in Rust",
 		href: "https://o3d.xallt.dev",
+		githubUrl: undefined,
 		image: "/src/assets/img/stuff-preview/o3d-screenshot.jpg",
 		listed: true,
 	},
@@ -134,6 +140,7 @@ const _allStuff: Stuff[] = [
 		name: "3D Books",
 		description: "Actual books, made interactive in 3D with Three.js",
 		href: "https://lib3d.xallt.dev",
+		githubUrl: undefined,
 		image: "/src/assets/img/stuff-preview/lib3d-screenshot.jpg",
 		listed: true,
 	},
@@ -141,6 +148,7 @@ const _allStuff: Stuff[] = [
 		name: "Wikinator",
 		description: "Wiki-oriented Flask app and experiments.",
 		href: "https://wikinator.xallt.dev",
+		githubUrl: "https://github.com/Xallt/Wikinator",
 		image: "/src/assets/img/stuff-preview/Wikinator.png",
 		listed: false,
 	},
@@ -148,6 +156,7 @@ const _allStuff: Stuff[] = [
 		name: "Love2D things",
 		description: "LÖVE2D games and prototypes.",
 		href: "https://xallt.dev/love2d",
+		githubUrl: "https://github.com/Xallt/Love2D-Stuff",
 		image: "/src/assets/gif/stuff-preview/pascal-fractal.gif",
 		listed: true,
 	},
@@ -155,6 +164,7 @@ const _allStuff: Stuff[] = [
 		name: "Predicate Generator",
 		description: "Generating mathematical statements infinitely",
 		href: "https://predgen.xallt.dev",
+		githubUrl: "https://github.com/Xallt/PredicateGenerator",
 		image: "/src/assets/img/stuff-preview/PredGen.png",
 		listed: true,
 	},
@@ -162,6 +172,7 @@ const _allStuff: Stuff[] = [
 		name: "Shadertoy",
 		description: "Just some fun shaders",
 		href: "https://www.shadertoy.com/user/KavabONga",
+		githubUrl: undefined,
 		image: "/src/assets/gif/stuff-preview/shadertoy.gif",
 		listed: true,
 	}
