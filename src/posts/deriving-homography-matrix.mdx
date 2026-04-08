@@ -11,11 +11,13 @@ categories:
   - Math
   - Formulas
 ---
+import Callout from '../components/Callout.astro';
 
 Recently at work I was researching ML approaches to image matching, specifically [SuperGlue](https://arxiv.org/abs/1911.11763) / [MAST3R](https://arxiv.org/abs/2406.09756) / [ALIKED](https://arxiv.org/abs/2304.03608) and some similar methods.
 
-> The interesting part in all this was to find out that SuperPoint / SuperGlue are trained on synthetic data, and then in a self-superviser manner, without needing some sort of smart labeling procedure.
-{:.prompt-info}
+<Callout type="info">
+The interesting part in all this was to find out that SuperPoint / SuperGlue are trained on synthetic data, and then in a self-superviser manner, without needing some sort of smart labeling procedure.
+</Callout>
 
 Inevitably, both of these methods being trained in a supervised manner, they need a sufficiently big dataset of Ground-Truth points pairs between a large corpus of images. I looked at what kind of data ALIKE specifically is trained on, and saw that one of the datasets provides images of planes with annotated true Homograhy transformation between cameras.
 

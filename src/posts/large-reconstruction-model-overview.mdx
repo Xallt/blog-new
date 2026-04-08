@@ -10,6 +10,7 @@ categories:
 - Paper-Overview
 pubDate: 2023-11-16 21:29 +0400
 ---
+import Callout from '../components/Callout.astro';
 ## Introduction
 I've been updating myself on the most major advancements in the field of 3D reconstruction and text-to-3D over the past year, and I've seen **lots** of tricks to improve performance, reformulate the task in various ways, inserting components from different fields of Machine Learning, and so on.
 
@@ -34,8 +35,9 @@ Let's start with how *whatever this is* is trained.
 
 ## How LRM is trained 
 
-> All variable names are improvised by me, don't try to look for corresponding formulas/variables in the paper
-{: .prompt-info}
+<Callout type="info">
+All variable names are improvised by me, don't try to look for corresponding formulas/variables in the paper
+</Callout>
 
 $$
 \begin{aligned}
@@ -126,10 +128,11 @@ _The formulas for a single Image-to-Triplane layer_
 
 BUUT knowing that there's 16 layers of this Cross/Self-Attention does make an impression that we're **meta-learning Score Distillation Sampling**, i.e. the Attention layers **simulate the distillation of image features** into 3D.
 
-> This is the paper I was thinking about: https://arxiv.org/abs/2212.07677 \
-> Basically authors show that Transformers out of Self-Attention blocks resemble *"mesa-optimizers"*, i.e. modify the input features at every layer to minimize some objective.
-> Didn't read it through though, just saw a summary of this somewhere 🤪
-{: .prompt-info}
+<Callout type="info">
+This is the paper I was thinking about: https://arxiv.org/abs/2212.07677 \
+Basically authors show that Transformers out of Self-Attention blocks resemble *"mesa-optimizers"*, i.e. modify the input features at every layer to minimize some objective.
+Didn't read it through though, just saw a summary of this somewhere 🤪
+</Callout>
 
 ## Noteworthy Technical details
 - Ground-truth camera parameters $\mathbf{c}$ are only injected into the Image-to-Triplane decoder during training. During inference, the camera features are replaced with an encoding of the default, fixed camera parameters

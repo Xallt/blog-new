@@ -14,6 +14,7 @@ categories:
   - Programming
   - Projects
 ---
+import Callout from '../components/Callout.astro';
 Skip to [here](#whats-so-cool-about-mediapipe) if you want the juicy technical insights right away
 
 ## Motivation
@@ -40,8 +41,9 @@ This post in particular is about the first stage of the development of this app,
 <del> There *should be* eventually a post about the app itself and the creative things I've done with it.</del> &mdash; Shouldn't make promises like this, I've dropped the project 🙃
 
 ## What's so cool about Mediapipe?
-> **TLDR:** Mediapipe is a framework for compiling your ML Inference pipelines into binaries runnable on any platform (Android / iOS / Desktop)
-{:.prompt-info}
+<Callout type="info">
+**TLDR:** Mediapipe is a framework for compiling your ML Inference pipelines into binaries runnable on any platform (Android / iOS / Desktop)
+</Callout>
 
 |Visualization of a graph|Snippet of this graph's definition|
 |:-:|:-:|
@@ -64,8 +66,9 @@ If you just need one/some of Mediapipe's examples as a library for your app -- y
 And they have pretty well-documented examples, for example here's one for running their facial landmark detection: [https://developers.google.com/mediapipe/solutions/vision/face_landmarker/python](https://developers.google.com/mediapipe/solutions/vision/face_landmarker/python)
 
 However, important note:
-> The Python `mp` library only provides **CPU** inference of models
-{: .prompt-warning }
+<Callout type="warning">
+The Python `mp` library only provides **CPU** inference of models
+</Callout>
 
 If your app is in C++ or if you want fast GPU inference, the next section is for you.
 
@@ -118,18 +121,20 @@ There will be lots of ups & downs in this process, you'll have a fair deal of is
 
 `alwayslink=1` has something to do with linking **all** of the files used by the build target. Not exactly sure, you can [read the Bazel docs](https://bazel.build/reference/be/c-cpp#cc_library.alwayslink) for details.
 
-> Bazel isn't capable of compiling static libraries without a main() function, so we are forced to make a **shared** library
-{: .prompt-warning}
+<Callout type="warning">
+Bazel isn't capable of compiling static libraries without a main() function, so we are forced to make a **shared** library
+</Callout>
 
 Ok, at this stage we should have something called `run_graph_main_linux.so`{: .filepath } somewhere in  the `bazel-bin`{: .filepath} directory. Now let's try to link it to our small CMake project
 
 #### Linking the Bazel-built shared library to a CMake project
 Now, let's get to actually creating a CMake project with this shared library linked 🚀
 
-> Again, and this is important -- the key to success in these new projects is iterative small changes, `git commit`ting each one after you tested it. 
-> 
-> Otherwise, while on a rush of excitement you're making lots of changes, one of those will break something. Likely you won't be able to tell what exactly (because C++ error logs are either non-existent or trash), so you'll have to roll everything back, discarding even good changes. Trust me, I've been there.
-{: .prompt-info}
+<Callout type="info">
+Again, and this is important -- the key to success in these new projects is iterative small changes, `git commit`ting each one after you tested it. 
+
+Otherwise, while on a rush of excitement you're making lots of changes, one of those will break something. Likely you won't be able to tell what exactly (because C++ error logs are either non-existent or trash), so you'll have to roll everything back, discarding even good changes. Trust me, I've been there.
+</Callout>
 
 Anyway, here's the steps I took:
 1. First, create a very simple Hello World `main.py`{: .filepath } -- just to confirm that something trivial compiles
