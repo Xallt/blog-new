@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 
 export interface NavItem {
 	label: string;
@@ -41,7 +42,13 @@ function formatDisplayDate(d: Date): string {
 	return `${dd}.${mm}.${yyyy}`;
 }
 
-export function parsePost(post: CollectionEntry<"posts">): Post {
+export async function getAllPosts(): Promise<CollectionEntry<"posts" | "postsMdx">[]> {
+	const allPosts = await getCollection("posts");
+	const allPostsMdx = await getCollection("postsMdx");
+	return [...allPosts, ...allPostsMdx];
+}
+
+export function parsePost(post: CollectionEntry<"posts" | "postsMdx">): Post {
 	return {
 		title: post.data.title,
 		tags: post.data.tags,

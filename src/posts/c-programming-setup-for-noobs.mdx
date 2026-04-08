@@ -1,5 +1,4 @@
 ---
-
 categories:
   - Programming
   - How-to
@@ -11,10 +10,13 @@ tags:
   - clangd
   - devtools
 ---
+import Callout from '../components/Callout.astro';
+
 Setting up my dev environment for C++ a few months ago was unsurprisingly non-trivial, so I wanted to share the things that would've helped me get it started much faster.
 
-> Some parts may vary for non-Mac users. More on this in the [clangd](#linting-clangd) section
-{:.prompt-warning}
+<Callout type="warning">
+Some parts may vary for non-Mac users. More on this in the [clangd](#linting-clangd) section
+</Callout>
 
 Table of contents:
 - [IDE](#ide-vscode--cursor)
@@ -37,9 +39,11 @@ And **Monokai** as my Color Theme of choice
 ![IDE screenshot](../assets/img/c-programming-setup/vscode-screenshot.png)
 _How my IDE setup looks_
 
-> My other must-have is the [Vim](https://marketplace.visualstudio.com/items?itemName=vscodevim.vim) extension —  if you're not familiar, I believe the speedup is worth investing a ~week of your life into developing the muscle memory for it. \
-> [LearnVim](https://github.com/iggredible/Learn-Vim) is probably a good starting point if you're interested
-{:.prompt-tip}
+<Callout type="tip">
+My other must-have is the [Vim](https://marketplace.visualstudio.com/items?itemName=vscodevim.vim) extension —  if you're not familiar, I believe the speedup is worth investing a ~week of your life into developing the muscle memory for it.
+
+[LearnVim](https://github.com/iggredible/Learn-Vim) is probably a good starting point if you're interested
+</Callout>
 
 ## CMake
 [CMake](https://cmake.org/) initially isn't a nice build system to use, but it's the most widespread & well-adopted for C/C++, so it's worth to stick to it. Also, it's [turing-complete](https://64.github.io/cmake-raytracer/) (*is that a good thing? lol*), basically meaning you can do anything with it.
@@ -65,9 +69,11 @@ This works in a file setup like:
 - CMakeLists.txt
 ```
 
-> Understanding CMake basics is not trivial -- I only actually grasped it after a month of close work with it (and wrote [some notes](https://xallt.github.io/posts/cmake-is-a-pain-in-the-ass/) about it). But I believe you can achieve this understanding *much faster*. \
-> I found this article about [CMake Basics](https://cliutils.gitlab.io/modern-cmake/chapters/basics.html) that seems to be written in a more human way than usual, might be a good starting point.
-{:.prompt-info}
+<Callout type="info">
+Understanding CMake basics is not trivial -- I only actually grasped it after a month of close work with it (and wrote [some notes](https://xallt.github.io/posts/cmake-is-a-pain-in-the-ass/) about it). But I believe you can achieve this understanding *much faster*.
+
+I found this article about [CMake Basics](https://cliutils.gitlab.io/modern-cmake/chapters/basics.html) that seems to be written in a more human way than usual, might be a good starting point.
+</Callout>
 
 For convenience, in all my C++ projects I have a `build.sh` that looks like this:
 ```bash
@@ -90,13 +96,15 @@ What this does is:
 ## Linting: clangd
 [Clangd](https://clangd.llvm.org/) is a [language server](https://microsoft.github.io/language-server-protocol/) for C/C++ (and more) which integrates well if you're using [clang](https://clang.llvm.org/) for compilation (which I kinda recommend)
 
-> If you are using [GCC](https://gcc.gnu.org/) as your compiler, you can either:
-> - Configure [clangd to work with gcc](https://stackoverflow.com/questions/62624352/can-i-use-gcc-compiler-and-clangd-language-server)
-> - Use [Intellisense](https://code.visualstudio.com/docs/editing/intellisense) which also [uses compile_commands.json](https://code.visualstudio.com/docs/cpp/configure-intellisense#_compilecommandsjson-file) the wonders of which I'll explain below
-{:.prompt-warning}
+<Callout type="warning">
+If you are using [GCC](https://gcc.gnu.org/) as your compiler, you can either:
+
+- Configure [clangd to work with gcc](https://stackoverflow.com/questions/62624352/can-i-use-gcc-compiler-and-clangd-language-server)
+- Use [Intellisense](https://code.visualstudio.com/docs/editing/intellisense) which also [uses compile_commands.json](https://code.visualstudio.com/docs/cpp/configure-intellisense#_compilecommandsjson-file) the wonders of which I'll explain below
+</Callout>
 
 A very common issue that I encountered while setting up C++ projects -- the linter just doesn't understand where to search for your header `.h`/`.hpp` files / where to find the libraries.
-![Linter Issue](../assets/img/c-programming-setup/linter-issue.png){: w="600"}
+![Linter Issue](../assets/img/c-programming-setup/linter-issue.png)
 _Some examples of things that the linter gets weirdly wrong_
 
 But your compiler can provide your linter with those hints -- just add `-DCMAKE_EXPORT_COMPILE_COMMANDS=1` to your CMake flags (as in the `build.sh` script in the [CMake section](#cmake)), and then setup a `.clangd` at the root of your project with 
@@ -108,7 +116,7 @@ CompileFlags:
 
 And *voila*, your linter perfectly understands your codebase! (*Given that it actually compiles*)
 
-Clangd also has [clangd-tidy](https://clangd.llvm.org/features#clang-tidy-checks) with advanced code checks -- to enable, add this to the `.clangd` file:
+Clangd also has [clangd-tidy](https://clangd.llvm.org/features#clangd-tidy-checks) with advanced code checks -- to enable, add this to the `.clangd` file:
 ```
 CompileFlags:
   CompilationDatabase: build/
@@ -117,8 +125,9 @@ CompileFlags:
 ```
 All available **clangd-tidy** checks are [here](https://clang.llvm.org/extra/clang-tidy/checks/list.html).
 
-> After every `.clangd` update or major change to the build setup, you'll need to **reload** the IDE for the linter to see the changes
-{:.prompt-tip}
+<Callout type="tip">
+After every `.clangd` update or major change to the build setup, you'll need to **reload** the IDE for the linter to see the changes
+</Callout>
 
 ## Debugging
 As mentioned, the [CodeLLDB](https://open-vsx.org/extension/vadimcn/vscode-lldb) provides very simple debugging support. However, in VSCode for debugging you need to set up a `launch.json` file -- my template is:

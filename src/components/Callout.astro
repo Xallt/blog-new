@@ -1,0 +1,200 @@
+---
+/**
+ * Chirpy-style prompt / callout block (Jekyll Chirpy `> ... {: .prompt-* }`).
+ * Icons: `useFaIcon` resolves Font Awesome Free SVGs (`?url`) for CSS `mask-image` + `currentColor` fill.
+ * @see _sass/addon/commons.scss blockquote[class^='prompt-']
+ * @see _sass/addon/module.scss @mixin prompt
+ * @see _sass/colors/typography-light.scss / typography-dark.scss (--prompt-*)
+ */
+import { useFaIcon } from "./useFaIcon";
+
+export type PromptType = "tip" | "info" | "warning" | "danger";
+
+export interface Props {
+    type?: PromptType;
+}
+
+const { type = "info" }: Props = Astro.props;
+
+/** FA-style icon names passed to `useFaIcon` (Chirpy: tip → regular lightbulb; info/warning → circle-exclamation; danger → triangle-exclamation). */
+const PROMPT_FA_ICONS: Record<PromptType, string> = {
+    tip: "regular/lightbulb",
+    info: "solid/circle-exclamation",
+    warning: "solid/circle-exclamation",
+    danger: "solid/triangle-exclamation",
+};
+
+const iconName = PROMPT_FA_ICONS[type];
+const iconSrc = useFaIcon(iconName);
+---
+
+<blockquote class:list={["chirpy-callout", `prompt-${type}`]}>
+    <span class="chirpy-callout__icon" aria-hidden="true">
+        <span
+            class="chirpy-callout__glyph"
+            style={`--fa-icon-src: url(${JSON.stringify(iconSrc)})`}></span>
+    </span>
+    <div class="chirpy-callout__body">
+        <slot />
+    </div>
+</blockquote>
+
+<style>
+    /*
+   * Base layout matches Chirpy: no left border, rounded, left icon column.
+   * $base-radius: 0.625rem (_sass/addon/variables.scss)
+   */
+    .chirpy-callout {
+        --chirpy-callout-radius: 0.625rem;
+        /* Match prose line box so `lh` on the icon column aligns with body text */
+        --callout-glyph-size: 1.125rem;
+
+        border-left: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        column-gap: 0.25rem;
+        margin: 0 0 1rem;
+        padding: 1rem;
+        border-radius: var(--chirpy-callout-radius);
+        font-size: inherit;
+        line-height: inherit;
+
+        /* Light scheme (typography-light.scss) */
+        --prompt-text-color: rgb(46 46 46 / 0.77);
+        --prompt-tip-bg: rgb(123 247 144 / 0.2);
+        --prompt-tip-icon-color: #03b303;
+        --prompt-info-bg: #e1f5fe;
+        --prompt-info-icon-color: #0070cb;
+        --prompt-warning-bg: rgb(255 243 205);
+        --prompt-warning-icon-color: #ef9c03;
+        --prompt-danger-bg: rgb(248 215 218 / 0.56);
+        --prompt-danger-icon-color: #df3c30;
+
+        color: var(--prompt-text-color);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .chirpy-callout:not([data-theme="light"]) {
+            /* typography-dark.scss */
+            --prompt-text-color: rgb(216 212 212 / 0.75);
+            --prompt-tip-bg: rgb(22 60 36 / 0.64);
+            --prompt-tip-icon-color: rgb(15 164 15 / 0.81);
+            --prompt-info-bg: rgb(7 59 104 / 0.8);
+            --prompt-info-icon-color: #0075d1;
+            --prompt-warning-bg: rgb(90 69 3 / 0.88);
+            --prompt-warning-icon-color: rgb(255 165 0 / 0.8);
+            --prompt-danger-bg: rgb(86 28 8 / 0.8);
+            --prompt-danger-icon-color: #cd0202;
+        }
+    }
+
+    .chirpy-callout[data-theme="dark"] {
+        --prompt-text-color: rgb(216 212 212 / 0.75);
+        --prompt-tip-bg: rgb(22 60 36 / 0.64);
+        --prompt-tip-icon-color: rgb(15 164 15 / 0.81);
+        --prompt-info-bg: rgb(7 59 104 / 0.8);
+        --prompt-info-icon-color: #0075d1;
+        --prompt-warning-bg: rgb(90 69 3 / 0.88);
+        --prompt-warning-icon-color: rgb(255 165 0 / 0.8);
+        --prompt-danger-bg: rgb(86 28 8 / 0.8);
+        --prompt-danger-icon-color: #cd0202;
+    }
+
+    .chirpy-callout[data-theme="light"] {
+        --prompt-text-color: rgb(46 46 46 / 0.77);
+        --prompt-tip-bg: rgb(123 247 144 / 0.2);
+        --prompt-tip-icon-color: #03b303;
+        --prompt-info-bg: #e1f5fe;
+        --prompt-info-icon-color: #0070cb;
+        --prompt-warning-bg: rgb(255 243 205);
+        --prompt-warning-icon-color: #ef9c03;
+        --prompt-danger-bg: rgb(248 215 218 / 0.56);
+        --prompt-danger-icon-color: #df3c30;
+    }
+
+    .chirpy-callout.prompt-tip {
+        --callout-glyph-size: 1rem;
+        background-color: var(--prompt-tip-bg);
+    }
+    .chirpy-callout.prompt-info {
+        background-color: var(--prompt-info-bg);
+    }
+    .chirpy-callout.prompt-warning {
+        background-color: var(--prompt-warning-bg);
+    }
+    .chirpy-callout.prompt-danger {
+        background-color: var(--prompt-danger-bg);
+    }
+
+    .chirpy-callout__icon {
+        flex: 0 0 2.75rem;
+        width: 2.75rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        box-sizing: border-box;
+        /* Center glyph on the first line: (line box height − icon) / 2 */
+        padding-top: max(0px, calc((1lh - var(--callout-glyph-size)) / 2));
+        pointer-events: none;
+        color: var(--prompt-icon-color, #0070cb);
+        font-size: inherit;
+        line-height: inherit;
+    }
+
+    .chirpy-callout__body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .chirpy-callout__body :global(> :first-child) {
+        margin-top: 0;
+    }
+
+    .chirpy-callout.prompt-tip .chirpy-callout__icon {
+        color: var(--prompt-tip-icon-color);
+    }
+    .chirpy-callout.prompt-info .chirpy-callout__icon {
+        color: var(--prompt-info-icon-color);
+    }
+    .chirpy-callout.prompt-warning .chirpy-callout__icon {
+        color: var(--prompt-warning-icon-color);
+    }
+    .chirpy-callout.prompt-danger .chirpy-callout__icon {
+        color: var(--prompt-danger-icon-color);
+    }
+
+    /* Monochrome SVG via mask so `color` matches Chirpy’s --prompt-*-icon-color */
+    .chirpy-callout__glyph {
+        display: block;
+        width: var(--callout-glyph-size);
+        height: var(--callout-glyph-size);
+        flex-shrink: 0;
+        background-color: currentColor;
+        -webkit-mask-image: var(--fa-icon-src);
+        mask-image: var(--fa-icon-src);
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    }
+
+    .chirpy-callout__body :global(p:last-child) {
+        margin-bottom: 0;
+    }
+
+    .chirpy-callout__body :global(a) {
+        text-decoration: underline;
+        text-decoration-color: var(--link-underline-color, rgb(219 216 216));
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .chirpy-callout:not([data-theme="light"])
+            .chirpy-callout__body
+            :global(a) {
+            --link-underline-color: rgb(82 108 150);
+        }
+    }
+</style>

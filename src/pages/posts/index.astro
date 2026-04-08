@@ -1,11 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import Nav from "../../components/Nav.astro";
 import PostList from "../../components/PostList.astro";
-import { navItems, parsePost, type Post } from "../../data/home";
+import { getAllPosts, navItems, parsePost, type Post } from "../../data/home";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-const allPosts = await getCollection("posts");
+const allPosts = await getAllPosts();
 
 const posts: Post[] = [...allPosts]
 	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())

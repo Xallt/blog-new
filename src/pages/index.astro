@@ -1,13 +1,19 @@
 ---
-import { getCollection } from "astro:content";
 import Hero from "../components/Hero.astro";
 import Nav from "../components/Nav.astro";
 import PostList from "../components/PostList.astro";
 import StuffGrid from "../components/StuffGrid.astro";
-import { hero, navItems, parsePost, stuff, type Post } from "../data/home";
+import {
+	getAllPosts,
+	hero,
+	navItems,
+	parsePost,
+	stuff,
+	type Post,
+} from "../data/home";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-const allPosts = await getCollection("posts");
+const allPosts = await getAllPosts();
 
 const recentPosts: Post[] = [...allPosts]
 	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
@@ -18,7 +24,8 @@ const previewStuff = stuff.filter((s) => s.image != null).slice(0, 3);
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">
-	<div id="obsidian-graph-bg" class="obsidian-graph-bg" aria-hidden="true"></div>
+	<div id="obsidian-graph-bg" class="obsidian-graph-bg" aria-hidden="true">
+	</div>
 	<div class="page page--with-graph">
 		<Nav items={navItems} />
 		<Hero hero={hero} />
