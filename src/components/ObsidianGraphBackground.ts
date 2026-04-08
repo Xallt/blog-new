@@ -29,8 +29,6 @@ const NODE_FADE_MS = 1100;
 
 /** Scroll parallax: background translate as fraction of window.scrollY (negative = moves opposite to scroll) */
 const PARALLAX_SCROLL_K = -0.18;
-/** Slight scale so translated edges rarely show empty canvas */
-const PARALLAX_OVERSCALE = 1.07;
 
 /** Simulation alpha decay (library default ~0.0228) */
 const D3_ALPHA_DECAY = 0.018;
@@ -117,16 +115,27 @@ export function mountObsidianGraphBackground(
 
 	const scrollOpts: AddEventListenerOptions = { passive: true };
 
+	/** Canvas height needed so parallax never reveals empty space below. */
+	function canvasHeight(): number {
+		const maxScroll = Math.max(
+			0,
+			document.documentElement.scrollHeight - window.innerHeight,
+		);
+		return Math.ceil(
+			window.innerHeight + maxScroll * Math.abs(PARALLAX_SCROLL_K),
+		);
+	}
+
 	function onResize() {
 		if (fg) {
-			fg.width(window.innerWidth).height(window.innerHeight);
+			fg.width(window.innerWidth).height(canvasHeight());
 		}
 		applyParallax();
 	}
 
 	function applyParallax() {
 		const y = window.scrollY * PARALLAX_SCROLL_K;
-		container.style.transform = `translate3d(0, ${y}px, 0) scale(${PARALLAX_OVERSCALE})`;
+		container.style.transform = `translate3d(0, ${y}px, 0)`;
 	}
 
 	function onScroll() {
@@ -180,8 +189,8 @@ export function mountObsidianGraphBackground(
 				return;
 			}
 			const w = window.innerWidth;
-			const h = window.innerHeight;
-			if (w < 2 || h < 2) return;
+			const h = canvasHeight();
+			if (w < 2 || window.innerHeight < 2) return;
 
 			function smoothstep(edge0: number, edge1: number, x: number) {
 				x = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
@@ -231,7 +240,6 @@ export function mountObsidianGraphBackground(
 			window.addEventListener("mousemove", onMouseMove, { passive: true });
 			window.addEventListener("blur", onMouseLeave);
 
-			container.style.transformOrigin = "center center";
 			applyParallax();
 
 			const fadeStart = performance.now();
@@ -284,6 +292,5 @@ export function mountObsidianGraphBackground(
 			fg = null;
 		}
 		container.style.transform = "";
-		container.style.transformOrigin = "";
 	};
 }
