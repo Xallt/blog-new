@@ -115,6 +115,9 @@ export function mountObsidianGraphBackground(
 
 	const scrollOpts: AddEventListenerOptions = { passive: true };
 
+	let lastResizeWidth = window.innerWidth;
+	let lastResizeHeight = window.innerHeight;
+
 	/** Canvas height needed so parallax never reveals empty space below. */
 	function canvasHeight(): number {
 		const maxScroll = Math.max(
@@ -127,8 +130,17 @@ export function mountObsidianGraphBackground(
 	}
 
 	function onResize() {
+		const w = window.innerWidth;
+		const h = window.innerHeight;
+		const widthChanged = w !== lastResizeWidth;
+		// Ignore small height-only changes — mobile browser address bar
+		// showing/hiding causes ~50-60px changes that shouldn't resize the canvas.
+		const heightChangedSignificantly = Math.abs(h - lastResizeHeight) >= 100;
+		if (!widthChanged && !heightChangedSignificantly) return;
+		lastResizeWidth = w;
+		lastResizeHeight = h;
 		if (fg) {
-			fg.width(window.innerWidth).height(canvasHeight());
+			fg.width(w).height(canvasHeight());
 		}
 		applyParallax();
 	}
