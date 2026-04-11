@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import Nav from "../../components/Nav.astro";
 import Tag from "../../components/Tag.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
 import { navItems, parsePost } from "../../data/home";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -10,27 +11,25 @@ export async function getStaticPaths() {
     const allPostsMdx = await getCollection("postsMdx");
     return [...allPosts, ...allPostsMdx].map((post) => ({
         params: { post: post.id },
-        props: {
-            post,
-        },
+        props: { post },
     }));
 }
 
 const { post } = Astro.props;
 const { tags } = parsePost(post);
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 ---
 
 <BaseLayout title={post.data.title}>
-    <div class="page post-content">
+    <div class="post-page">
         <Nav items={navItems} />
-        <header class="post-header">
-            <h1 class="post-title">{post.data.title}</h1>
-            {
-                (
-                    <div class="post-meta-line">
-                        {tags.length > 0 && (
+        <div class="post-grid">
+            <header class="post-header">
+                <h1 class="post-title">{post.data.title}</h1>
+                {
+                    tags.length > 0 && (
+                        <div class="post-meta-line">
                             <ul class="post-page-tags">
                                 {tags.map((tag) => (
                                     <li>
@@ -38,26 +37,93 @@ const { Content } = await render(post);
                                     </li>
                                 ))}
                             </ul>
-                        )}
-                    </div>
-                )
-            }
-        </header>
-        <Content />
+                        </div>
+                    )
+                }
+            </header>
+            <aside class="toc-sidebar">
+                <TableOfContents headings={headings} />
+            </aside>
+            <div class="post-body">
+                <Content />
+            </div>
+        </div>
     </div>
 </BaseLayout>
 
 <style>
-    .post-content {
-        font-size: 1.5rem;
-        font-weight: 400;
+    /* ── Page wrapper: padding only, no max-width constraint ──────
+       .page from BaseLayout caps at 52rem — that would trap the grid.
+       We need the full viewport width so the 1fr TOC column has room. */
+    .post-page {
+        padding: var(--space-md) var(--space-sm) var(--space-xl);
+    }
+
+    /* ── Grid layout ────────────────────────────────────────────── */
+    /* Symmetric 3-col: equal 1fr gutters around the content column keep
+       the content visually centered at its original position. TOC lives
+       in the right gutter without shifting the content area. */
+    .post-grid {
+        display: grid;
+        grid-template-columns: 1fr minmax(0, 52rem) 1fr;
+        grid-template-areas:
+            ". header ."
+            ". body   toc";
+        row-gap: var(--space-md);
+        padding: 0 var(--space-md);
     }
 
     .post-header {
-        margin-bottom: var(--space-md);
+        grid-area: header;
+        margin-bottom: 0;
         text-align: center;
     }
 
+    /* aside comes before post-body in DOM (mobile natural order: header → toc → body).
+       On desktop grid-template-areas places it in the right 1fr column. */
+    .toc-sidebar {
+        grid-area: toc;
+        position: sticky;
+        top: 2rem;
+        align-self: start;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+        padding-left: 2rem;
+    }
+
+    .post-body {
+        grid-area: body;
+        font-size: 1.5rem;
+        font-weight: 400;
+        min-width: 0;
+    }
+
+    /* ── Mobile: collapse to single column ─────────────────────── */
+    /* Hide sidebar when the right gutter is too narrow for the TOC.
+       At 80rem: right 1fr ≈ (80-4-52)/2 = 12rem — borderline.
+       Below 80rem we switch to inline TOC. */
+    @media (max-width: 80rem) {
+        .post-grid {
+            grid-template-columns: minmax(0, 52rem);
+            grid-template-areas:
+                "header"
+                "toc"
+                "body";
+            justify-content: center;
+        }
+
+        .toc-sidebar {
+            position: static;
+            max-height: none;
+            overflow-y: visible;
+            padding-left: 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--space-sm) 0;
+        }
+    }
+
+    /* ── Post header styles ──────────────────────────────────────── */
     .post-title {
         margin: 0;
         font-size: 2.5rem;
@@ -77,15 +143,6 @@ const { Content } = await render(post);
         color: var(--text-muted-color);
     }
 
-    .post-page-category {
-        white-space: nowrap;
-    }
-
-    .post-meta-sep {
-        opacity: 0.55;
-        user-select: none;
-    }
-
     .post-page-tags {
         margin: 0;
         padding: 0;
@@ -95,5 +152,4 @@ const { Content } = await render(post);
         gap: 0.35rem 0.65rem;
         justify-content: center;
     }
-
 </style>
