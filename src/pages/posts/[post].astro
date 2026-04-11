@@ -53,16 +53,16 @@ const { Content, headings } = await render(post);
 
 <style>
     /* ── Grid layout ────────────────────────────────────────────── */
+    /* Symmetric 3-col: equal 1fr gutters around the content column keep
+       the content visually centered at its original position. TOC lives
+       in the right gutter without shifting the content area. */
     .post-grid {
         display: grid;
-        grid-template-columns: minmax(0, 52rem) 16rem;
+        grid-template-columns: 1fr minmax(0, 52rem) 1fr;
         grid-template-areas:
-            "header header"
-            "body   toc";
-        column-gap: 2rem;
+            ". header ."
+            ". body   toc";
         row-gap: var(--space-md);
-        max-width: calc(52rem + 2rem + 16rem);
-        margin: 0 auto;
         padding: 0 var(--space-md);
     }
 
@@ -73,7 +73,7 @@ const { Content, headings } = await render(post);
     }
 
     /* aside comes before post-body in DOM (mobile natural order: header → toc → body).
-       On desktop grid-template-areas places it in the right column. */
+       On desktop grid-template-areas places it in the right 1fr column. */
     .toc-sidebar {
         grid-area: toc;
         position: sticky;
@@ -81,6 +81,7 @@ const { Content, headings } = await render(post);
         align-self: start;
         max-height: calc(100vh - 4rem);
         overflow-y: auto;
+        padding-left: 2rem;
     }
 
     .post-body {
@@ -91,20 +92,24 @@ const { Content, headings } = await render(post);
     }
 
     /* ── Mobile: collapse to single column ─────────────────────── */
-    @media (max-width: 72rem) {
+    /* Hide sidebar when the right gutter is too narrow for the TOC.
+       At 80rem: right 1fr ≈ (80-4-52)/2 = 12rem — borderline.
+       Below 80rem we switch to inline TOC. */
+    @media (max-width: 80rem) {
         .post-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: minmax(0, 52rem);
             grid-template-areas:
                 "header"
                 "toc"
                 "body";
-            max-width: 52rem;
+            justify-content: center;
         }
 
         .toc-sidebar {
             position: static;
             max-height: none;
             overflow-y: visible;
+            padding-left: 0;
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
             padding: var(--space-sm) 0;
