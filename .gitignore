@@ -24,3 +24,6 @@ pnpm-debug.log*
 .idea/
 
 __pycache__
+
+# Python (uv venv under scripts/)
+.venv/

@@ -1,0 +1,90 @@
+---
+title: Digging into OpenMVS fundamentals
+
+tags:
+- mvs
+- computer-vision
+- image-processing
+- papers
+
+categories: []
+pubDate: 2026-04-11 09:17 +0300
+---
+
+import bidirectionalExamples from '../assets/img/patchmatch-origins/bidirectional-examples.jpg';
+import bidirectionalFormula from '../assets/img/patchmatch-origins/bidirectional-formula.jpg';
+import contentAwareFillImg from '../assets/img/patchmatch-origins/content-aware-fill-example.jpg';
+import myFrogColmap from '../assets/img/patchmatch-origins/frog-colmap.jpg';
+import myFrogImages from '../assets/img/patchmatch-origins/frog-grid.jpg';
+import imageMerging from '../assets/img/patchmatch-origins/image-merging.jpg';
+import imageSummarization from '../assets/img/patchmatch-origins/image-summarization.jpg';
+import imageSynthesis from '../assets/img/patchmatch-origins/image-synthesis.jpg';
+import patchMatchProcess from '../assets/img/patchmatch-origins/patchmatch-process.jpg';
+import pointcloudDensification from '../assets/img/patchmatch-origins/pointcloud-densification.jpg';
+import seamCarvingSima from '../assets/img/patchmatch-origins/seam-carving-sima.mp4';
+import seamCarvingComparison from '../assets/img/patchmatch-origins/seamcarving.mp4';
+import PostImage from '../components/PostImage.astro';
+import PostVideo from '../components/PostVideo.astro';
+
+I like going down rabbitholes! That's where I learn the most
+
+## Context
+I have some toys & souvenirs I want to 3D scan - for example, this frog I actually made myself in a ceramics studio
+<PostImage src={myFrogImages} alt="frog-images" caption="Images I'm using for reconstructing my frog" />
+<PostImage src={myFrogColmap} alt="colmap-frog" caption='Colmap output for my frog' />
+
+I'm using [Colmap](https://colmap.github.io/) to estimate all parameters of the photos & get a rough estimate of the pointcloud, but then I need an MVS program to densify the pointcloud
+<PostImage src={pointcloudDensification} alt="pointcloud densification" caption='Example of densification - we get a "sparse" pointcloud from Colmap, and then an MVS program is supposed to make it suitable for mesh creation' />
+
+[OpenMVS](https://github.com/medidai/openMVS) is a good one, but it requires strictly [CUDA](https://developer.nvidia.com/cuda/toolkit) for executing Pointcloud Densification - and I want to do everything locally on my Mac M3 (no CUDA 😔)
+
+Turns out there's such a [difference](https://www.shashankshekhar.com/blog/apple-metal-vs-nvidia-cuda) in the execution model for [Metal](https://en.wikipedia.org/wiki/Metal_(API)) vs CUDA, that it's not just "rewriting a CUDA kernel to Metal", it would require a whole reengineering of the approach.  Well at least that's what [Claude](https://claude.ai) told me
+
+So I thought... do I really trust Claude? I decided I wanted to have a deeper understanding of how OpenMVS works (and then how programming for Apple Silicon looks) to decide for myself whether it's really that hard of a task
+
+## Diving in
+
+### OpenMVS
+Went ahead to the [OpenMVS paper](https://arxiv.org/pdf/2007.02295) -- first thing I realized -- I need a solid grasp on [PatchMatch](https://3dvar.com/Barnes2009PatchMatch.pdf), so that's where I went
+
+(Any other progress on reading OpenMVS is outside of the scope of this post lol)
+
+### PatchMatch
+
+It wasn't at all what I expected! I thought the original PatchMatch was also intended for MVS, but turned out it was for image editing - specifically tools like [Content-aware Fill](https://nigelwaters.photography/blog/content-aware-fill-photoshop/)!
+<PostImage src={contentAwareFillImg} alt="content-aware fill" caption="Example of Content-Aware fill. Works funky, but great in some cases!" />
+
+PatchMatch proposed a very efficient way to find **matches** between **patches** (haha) which wasn't bruteforce. Though it was pretty simple - it assumed both patches were ailgned and we could match them pixel-by-pixel with just a single offset value
+
+The algorithm is interesting - I feel like we can draw a parallel to [RANSAC](https://en.wikipedia.org/wiki/Random_sample_consensus) - we're replacing bruteforce searching with some random sampling + fit metric, in PatchMatch we also have very efficient propagation
+<PostImage src={patchMatchProcess} alt="patch match process" caption="Example of applying patch match to two images. It tries to reconstruct first image simply by offsetting pixels from the second one" />
+
+But the efficient algorithm is the main thing that PatchMatch did, and it wasn't actually the paper that proposed using these matches for image editing - it was [Summarizing visual data using bidirectional similarity](https://www.wisdom.weizmann.ac.il/~vision/VisualSummary/bidirectional_similarity_CVPR2008.pdf)
+
+### Bidirectional similarity
+Core idea - it defined a "image similarity" function which evaluated whether the contents of two images are identical - by compared patches at varying scales. 
+<PostImage src={bidirectionalFormula} alt="bidirectional similarity formula" caption="Formula. It's actually *dissimilarity* - i.e. it's larger when two images are more different" />
+
+I.e. if an image has all the same objects but just in a different arrangement, the similarity is satisfied
+<PostImage src={bidirectionalExamples} alt="bidirectional similarity examples" caption="Examples showing what completeness and coherence mean here" height="400" />
+
+Then we can do stuff like:
+- Image summarization - generate an image that is 3x smaller but contains all the same content
+<PostImage src={imageSummarization} alt="image summarization" caption="Showimg image summarization - we downscale by 0.95, then optimize for image similarity" height="400" />
+- Photo merging - we just concatenate images and then optimize for similarity to all input images - then the discontinuities become some kind of merging
+<PostImage src={imageMerging} alt="image merging" caption="Showimg image merging - we concatenate images, then optimize for similarity to all input images. Discontinuous seams are replaced with something ok" height="400" />
+- Image synthesis - we stretch the image & fill in the remaining things optimizing for coherence
+<PostImage src={imageSynthesis} alt="image synthesis" caption="Showimg image synthesis" height="400" />
+
+I was reeeeally surprising that such simple formulas lead to such good basic image processing tools. Ofc this is very slow, and also performs terrible on harder cases, but this is very interesting!!! Pre-AI image fill
+
+And in its algorithm results in compared with [Seam Carving](https://perso.crans.org/frenoy/matlab2012/seamcarving.pdf) which turned out to be very interesting!
+
+<PostVideo src={seamCarvingComparison} alt="seam carving comparison" caption="Comparing to Seam Carving"/>
+
+### Seam Carving
+I was amazed at the algorithm!!! It's so stunningly simple yet so beautiful in how it works
+
+The idea is so simple I didn't even have to look at the paper after I saw the animation of how it works. And there's this website that lets you try it out: https://www.aryan.app/seam-carving/
+
+<PostVideo src={seamCarvingSima} alt="seam carving my cat" caption="Seam carving my cat"/>

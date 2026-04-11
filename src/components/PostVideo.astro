@@ -1,0 +1,46 @@
+---
+export interface Props {
+	src: string;
+	alt: string;
+	width?: number;
+	height?: number;
+	caption?: string;
+}
+
+const { src, alt, width, height, caption } = Astro.props;
+---
+
+<figure class="post-figure">
+	<video
+		src={src}
+		controls
+		preload="metadata"
+		playsinline
+		aria-label={alt}
+		width={width}
+		height={height}
+	/>
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+	.post-figure {
+		margin: var(--space-md) auto;
+		max-width: 100%;
+		text-align: center;
+	}
+
+	.post-figure :global(video) {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		max-width: 100%;
+	}
+
+	figcaption {
+		margin-top: var(--space-xs);
+		font-size: 0.7em;
+		color: var(--text-muted-color);
+		text-align: center;
+	}
+</style>

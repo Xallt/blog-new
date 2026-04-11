@@ -1,0 +1,9 @@
+[project]
+name = "blog-scripts"
+version = "0.1.0"
+description = "Python utilities for this repo (Obsidian graph export, media optimization, …)"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "obsidiantools>=0.11",
+    "opencv-python>=4.8",
+]

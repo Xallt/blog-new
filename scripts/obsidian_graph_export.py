@@ -5,10 +5,13 @@ Export obsidiantools vault.graph to JSON for force-graph.
 Each node includes optional string `type` from YAML frontmatter `type:`
 (paper / library / definition preferred when multiple values are set).
 
-  cd scripts/obsidian-graph-export
-  uv sync
-  uv run python export.py --vault /path/to/vault --out ../../public/obsidian-graph.json
+  cd scripts && uv sync
+  uv run python obsidian_graph_export.py --vault /path/to/vault --out ../public/obsidian-graph.json
   # Optional: --types paper,library,definition (default) or "" to disable type filter
+
+From repo root:
+
+  uv run --directory scripts python obsidian_graph_export.py --vault /path/to/vault
 """
 
 from __future__ import annotations
@@ -25,8 +28,8 @@ DEFAULT_TYPES: tuple[str, ...] = ("paper", "library", "definition")
 
 
 def repo_root_from_script() -> Path:
-    # scripts/obsidian-graph-export/export.py -> blog-new/
-    return Path(__file__).resolve().parent.parent.parent
+    # scripts/obsidian_graph_export.py -> blog-new/
+    return Path(__file__).resolve().parent.parent
 
 
 def default_output_path() -> Path:
