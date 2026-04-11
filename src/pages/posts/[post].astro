@@ -22,7 +22,7 @@ const { Content, headings } = await render(post);
 ---
 
 <BaseLayout title={post.data.title}>
-    <div class="page">
+    <div class="post-page">
         <Nav items={navItems} />
         <div class="post-grid">
             <header class="post-header">
@@ -52,6 +52,13 @@ const { Content, headings } = await render(post);
 </BaseLayout>
 
 <style>
+    /* ── Page wrapper: padding only, no max-width constraint ──────
+       .page from BaseLayout caps at 52rem — that would trap the grid.
+       We need the full viewport width so the 1fr TOC column has room. */
+    .post-page {
+        padding: var(--space-md) var(--space-sm) var(--space-xl);
+    }
+
     /* ── Grid layout ────────────────────────────────────────────── */
     /* Symmetric 3-col: equal 1fr gutters around the content column keep
        the content visually centered at its original position. TOC lives
