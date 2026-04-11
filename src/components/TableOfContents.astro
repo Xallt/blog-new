@@ -30,17 +30,16 @@ const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) :
 </nav>
 
 <script>
-    // IntersectionObserver: highlight TOC link for the heading closest to top of viewport
+    // Highlight the TOC link for the last heading above the center of the viewport.
+    // A scroll listener re-evaluates on every scroll, so it's correct in both directions.
     const links = document.querySelectorAll<HTMLAnchorElement>('.toc-link[data-heading-slug]');
     if (links.length > 0) {
         const slugToLink = new Map<string, HTMLAnchorElement>();
         links.forEach(link => {
-            const slug = link.dataset.headingSlug!;
-            slugToLink.set(slug, link);
+            slugToLink.set(link.dataset.headingSlug!, link);
         });
 
-        // Collect all heading elements that have a matching TOC link
-        const headingEls: Element[] = [];
+        const headingEls: HTMLElement[] = [];
         slugToLink.forEach((_, slug) => {
             const el = document.getElementById(slug);
             if (el) headingEls.push(el);
@@ -51,25 +50,24 @@ const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) :
             slugToLink.get(slug)?.classList.add('toc-link--active');
         }
 
-        // Pre-activate the first heading on load
-        if (headingEls.length > 0) {
-            setActive(headingEls[0].id);
+        function update() {
+            const threshold = window.innerHeight * 0.5;
+            // Walk headings in order; keep updating activeEl as long as the
+            // heading's top edge is at or above the threshold line.
+            // Result: the last heading above center is highlighted.
+            let activeEl = headingEls[0];
+            for (const el of headingEls) {
+                if (el.getBoundingClientRect().top <= threshold) {
+                    activeEl = el;
+                } else {
+                    break;
+                }
+            }
+            if (activeEl) setActive(activeEl.id);
         }
 
-        // -10% top margin means heading must be within top 10% of viewport to activate.
-        // -80% bottom margin ignores headings in the bottom 80% of viewport.
-        const observer = new IntersectionObserver(
-            (entries) => {
-                for (const entry of entries) {
-                    if (entry.isIntersecting) {
-                        setActive(entry.target.id);
-                    }
-                }
-            },
-            { rootMargin: '-10% 0px -80% 0px' }
-        );
-
-        headingEls.forEach(el => observer.observe(el));
+        window.addEventListener('scroll', update, { passive: true });
+        update(); // set initial state on page load
     }
 </script>
 
