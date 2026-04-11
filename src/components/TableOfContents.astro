@@ -1,0 +1,120 @@
+---
+interface Props {
+    headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+
+// Find the shallowest depth present so indentation is relative
+const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) : 2;
+---
+
+<nav class="toc" aria-label="Table of contents">
+    <p class="toc-label">Table of Contents</p>
+    <ol class="toc-list">
+        {headings.map((heading) => (
+            <li
+                class="toc-item"
+                style={`--indent: ${(heading.depth - minDepth) * 0.75}rem`}
+            >
+                <a
+                    class="toc-link"
+                    href={`#${heading.slug}`}
+                    data-heading-slug={heading.slug}
+                >
+                    {heading.text}
+                </a>
+            </li>
+        ))}
+    </ol>
+</nav>
+
+<script>
+    // IntersectionObserver: highlight TOC link for the heading closest to top of viewport
+    const links = document.querySelectorAll<HTMLAnchorElement>('.toc-link[data-heading-slug]');
+    if (links.length > 0) {
+        const slugToLink = new Map<string, HTMLAnchorElement>();
+        links.forEach(link => {
+            const slug = link.dataset.headingSlug!;
+            slugToLink.set(slug, link);
+        });
+
+        // Collect all heading elements that have a matching TOC link
+        const headingEls: Element[] = [];
+        slugToLink.forEach((_, slug) => {
+            const el = document.getElementById(slug);
+            if (el) headingEls.push(el);
+        });
+
+        function setActive(slug: string) {
+            links.forEach(l => l.classList.remove('toc-link--active'));
+            slugToLink.get(slug)?.classList.add('toc-link--active');
+        }
+
+        // Pre-activate the first heading on load
+        if (headingEls.length > 0) {
+            setActive(headingEls[0].id);
+        }
+
+        // -10% top margin means heading must be within top 10% of viewport to activate.
+        // -80% bottom margin ignores headings in the bottom 80% of viewport.
+        const observer = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    if (entry.isIntersecting) {
+                        setActive(entry.target.id);
+                    }
+                }
+            },
+            { rootMargin: '-10% 0px -80% 0px' }
+        );
+
+        headingEls.forEach(el => observer.observe(el));
+    }
+</script>
+
+<style>
+    .toc {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .toc-label {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted-color);
+    }
+
+    .toc-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .toc-item {
+        padding-left: var(--indent, 0rem);
+    }
+
+    .toc-link {
+        display: block;
+        padding: 0.2rem 0 0.2rem 0.5rem;
+        color: var(--text-muted-color);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        transition: color 0.15s, border-color 0.15s;
+        overflow-wrap: anywhere;
+    }
+
+    .toc-link:hover {
+        color: var(--text-muted-highlight-color);
+        text-decoration: none;
+    }
+
+    .toc-link--active {
+        color: var(--heading-color);
+        border-left-color: var(--link-color);
+    }
+</style>
