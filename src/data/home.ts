@@ -95,7 +95,7 @@ export const hero: HeroData = {
 	bio: "Enthusiastic about 3D Reconstruction, Computer Graphics, Math generally",
 	socialLinks: [
 		{ icon: "fab fa-github", url: "https://github.com/Xallt" },
-		{ icon: "fa-brands fa-twitter", url: "https://twitter.com/Xallt" },
+		{ icon: "fa-brands fa-twitter", url: "https://twitter.com/Xallt_" },
 		{ icon: "fab fa-linkedin", url: "https://www.linkedin.com/in/shabat-dmitry/" },
 		{ icon: "fa-brands fa-telegram", url: "https://t.me/Xallt" },
 		{ icon: "fas fa-envelope", url: "mailto:mitya.shabat@gmail.com", noblank: true },
