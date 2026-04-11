@@ -11,12 +11,12 @@ categories:
   - Math
   - Formulas
 ---
-import Callout from '../components/Callout.astro';
-import PostImage from '../components/PostImage.astro';
 import postImg0 from "../assets/img/homography/Pasted image 20241228140316.png";
 import postImg1 from "../assets/img/homography/Screenshot 2024-12-28 at 14.34.29.png";
 import postImg2 from "../assets/img/homography/homography-derivation-1.jpg";
 import postImg3 from "../assets/img/homography/homography-derivation-2.jpg";
+import Callout from '../components/Callout.astro';
+import PostImage from '../components/PostImage.astro';
 
 Recently at work I was researching ML approaches to image matching, specifically [SuperGlue](https://arxiv.org/abs/1911.11763) / [MAST3R](https://arxiv.org/abs/2406.09756) / [ALIKED](https://arxiv.org/abs/2304.03608) and some similar methods.
 
@@ -29,7 +29,7 @@ Inevitably, both of these methods being trained in a supervised manner, they nee
 
 <PostImage src={postImg0} alt="The HPatches dataset mention" width={600} caption="Mention of the HPatches dataset in the ALIKE paper" />
 
-Now, I've of course heard about homographies before --- that's the matrix that, for a given plane, describes how to match a point on one camera with a point on another camera if they're observing the same point on that plane.
+Now, I've of course heard about homographies before -- that's the matrix that, for a given plane, describes how to match a point on one camera with a point on another camera if they're observing the same point on that plane.
 
 But after looking at this, and reviewing all my knowledge, I thought... why does a simple matrix work? Why is remapping a pixel from one camera to the other, given they're looking at a plane, describable with a single matrix (in homogeneous coordinates)?
 
@@ -41,7 +41,7 @@ Anyways, I started jumping through various online resources about what homograph
 
 Some resources did provide a sufficient proof for existence of a homography matrix and it being linear, but they did it through just proving the formula of deriving the homography matrix through 4 point correspondences between 2 cameras. And then just by the ability to express any other point on the plane as a linear combination of those 4 points, the matrix holds true for all points on the plane.
 
-But that feels like cheating --- I wanted to get a proof / formula irrespective of the particular points, just from the camera parameters / plane parameters alone.
+But that feels like cheating -- I wanted to get a proof / formula irrespective of the particular points, just from the camera parameters / plane parameters alone.
 
 So, here's my pretty detailed derivation of the formula for the homography matrix, given just the camera/plane parameters:
 
