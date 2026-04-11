@@ -6,36 +6,41 @@ interface Props {
 const { headings } = Astro.props;
 
 // Find the shallowest depth present so indentation is relative
-const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) : 2;
+const minDepth =
+    headings.length > 0 ? Math.min(...headings.map((h) => h.depth)) : 2;
 ---
 
 <nav class="toc" aria-label="Table of contents">
     <p class="toc-label">Table of Contents</p>
     <ol class="toc-list">
-        {headings.map((heading) => (
-            <li
-                class="toc-item"
-                style={`--indent: ${(heading.depth - minDepth) * 0.75}rem`}
-            >
-                <a
-                    class="toc-link"
-                    href={`#${heading.slug}`}
-                    data-heading-slug={heading.slug}
+        {
+            headings.map((heading) => (
+                <li
+                    class="toc-item"
+                    style={`--indent: ${(heading.depth - minDepth) * 0.75}rem`}
                 >
-                    {heading.text}
-                </a>
-            </li>
-        ))}
+                    <a
+                        class="toc-link"
+                        href={`#${heading.slug}`}
+                        data-heading-slug={heading.slug}
+                    >
+                        {heading.text}
+                    </a>
+                </li>
+            ))
+        }
     </ol>
 </nav>
 
 <script>
     // Highlight the TOC link for the last heading above the center of the viewport.
     // A scroll listener re-evaluates on every scroll, so it's correct in both directions.
-    const links = document.querySelectorAll<HTMLAnchorElement>('.toc-link[data-heading-slug]');
+    const links = document.querySelectorAll<HTMLAnchorElement>(
+        ".toc-link[data-heading-slug]",
+    );
     if (links.length > 0) {
         const slugToLink = new Map<string, HTMLAnchorElement>();
-        links.forEach(link => {
+        links.forEach((link) => {
             slugToLink.set(link.dataset.headingSlug!, link);
         });
 
@@ -46,8 +51,8 @@ const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) :
         });
 
         function setActive(slug: string) {
-            links.forEach(l => l.classList.remove('toc-link--active'));
-            slugToLink.get(slug)?.classList.add('toc-link--active');
+            links.forEach((l) => l.classList.remove("toc-link--active"));
+            slugToLink.get(slug)?.classList.add("toc-link--active");
         }
 
         function update() {
@@ -66,7 +71,7 @@ const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) :
             if (activeEl) setActive(activeEl.id);
         }
 
-        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener("scroll", update, { passive: true });
         update(); // set initial state on page load
     }
 </script>
@@ -102,7 +107,9 @@ const minDepth = headings.length > 0 ? Math.min(...headings.map(h => h.depth)) :
         color: var(--text-muted-color);
         text-decoration: none;
         border-left: 2px solid transparent;
-        transition: color 0.15s, border-color 0.15s;
+        transition:
+            color 0.15s,
+            border-color 0.15s;
         overflow-wrap: anywhere;
     }
 

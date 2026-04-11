@@ -1,8 +1,8 @@
 ---
 import { getCollection, render } from "astro:content";
 import Nav from "../../components/Nav.astro";
-import Tag from "../../components/Tag.astro";
 import TableOfContents from "../../components/TableOfContents.astro";
+import Tag from "../../components/Tag.astro";
 import { navItems, parsePost } from "../../data/home";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
@@ -24,7 +24,12 @@ const { Content, headings } = await render(post);
 <BaseLayout title={post.data.title}>
     <div class="post-page">
         <Nav items={navItems} />
-        <div class="post-grid">
+        <div
+            class:list={[
+                "post-grid",
+                { "post-grid--no-toc": !(headings && headings.length > 0) },
+            ]}
+        >
             <header class="post-header">
                 <h1 class="post-title">{post.data.title}</h1>
                 {
@@ -41,9 +46,14 @@ const { Content, headings } = await render(post);
                     )
                 }
             </header>
-            <aside class="toc-sidebar">
-                <TableOfContents headings={headings} />
-            </aside>
+            {
+                headings && headings.length > 0 && (
+                    <aside class="toc-sidebar">
+                        <TableOfContents headings={headings} />
+                    </aside>
+                )
+            }
+
             <div class="post-body">
                 <Content />
             </div>
@@ -71,6 +81,10 @@ const { Content, headings } = await render(post);
             ". body   toc";
         row-gap: var(--space-md);
         padding: 0 var(--space-md);
+    }
+
+    .post-grid--no-toc {
+        row-gap: var(--space-sm);
     }
 
     .post-header {
@@ -110,6 +124,13 @@ const { Content, headings } = await render(post);
                 "toc"
                 "body";
             justify-content: center;
+        }
+
+        /* No TOC: skip the empty middle row so row-gap is not applied twice. */
+        .post-grid--no-toc {
+            grid-template-areas:
+                "header"
+                "body";
         }
 
         .toc-sidebar {
