@@ -41,8 +41,18 @@ const AMBIENT_ALPHA_FLOOR = 0.02;
 /** Cursor: graph-space influence radius (falloff from cursor position) */
 const CURSOR_RADIUS = 200;
 /** Scales graph-space mouse delta (not normalized — faster motion ⇒ larger kick) */
-const CURSOR_IMPULSE_STRENGTH = 0.05;
-const CURSOR_IMPULSE_ALPHA_FLOOR = 0.14;
+const CURSOR_IMPULSE_STRENGTH = 0.2;
+const CURSOR_IMPULSE_ALPHA_FLOOR = 0.3;
+/**
+ * On swipe: if alpha < this, set alphaTarget + reheat so D3 link/charge forces
+ * actively propagate the disturbance. Guard prevents redundant resets when alpha
+ * is already warm.
+ */
+const CURSOR_REHEAT_ALPHA_THRESHOLD = 0.8;
+/** alphaTarget held during the ripple phase (sustains D3 forces without full reheat aggression) */
+const CURSOR_REHEAT_ALPHA_TARGET = 1.0;
+/** ms of cursor inactivity before alphaTarget is released back to 0 */
+const CURSOR_RIPPLE_SETTLE_MS = 4000;
 
 /** Once per frame: nudge nearby nodes along the mouse’s graph-space delta. */
 function applyCursorImpulse(
@@ -76,8 +86,10 @@ function applyCursorImpulse(
 
 function createAmbientForce() {
 	let nodes: SimNode[] = [];
+	let currentAlpha = 0;
 
 	function force(alpha: number) {
+		currentAlpha = alpha;
 		const a = Math.max(alpha, AMBIENT_ALPHA_FLOOR);
 		const j = AMBIENT_JITTER * a;
 		for (let i = 0, n = nodes.length; i < n; i++) {
@@ -92,7 +104,7 @@ function createAmbientForce() {
 		nodes = init;
 	};
 
-	return { force };
+	return { force, getAlpha: () => currentAlpha };
 }
 
 /** Mount force-graph into `container`. Returns teardown for tests or view transitions. */
@@ -112,6 +124,8 @@ export function mountObsidianGraphBackground(
 	let hasPrevGraphSample = false;
 	let prevGraphX = 0;
 	let prevGraphY = 0;
+	let ambientForce: ReturnType<typeof createAmbientForce> | null = null;
+	let reheatTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const scrollOpts: AddEventListenerOptions = { passive: true };
 
@@ -174,6 +188,21 @@ export function mountObsidianGraphBackground(
 		hasPrevGraphSample = true;
 		const { nodes } = fg.graphData() as { nodes: SimNode[] };
 		applyCursorImpulse(nodes, p.x, p.y, dgx, dgy);
+
+		if (dgx !== 0 || dgy !== 0) {
+			// Only activate D3 forces when alpha is cold; guard prevents redundant resets
+			if (ambientForce && ambientForce.getAlpha() < CURSOR_REHEAT_ALPHA_THRESHOLD) {
+				// Hold alpha at a warm level so link springs / charge propagate the disturbance
+				(fg as unknown as { d3AlphaTarget: (v: number) => void }).d3AlphaTarget(CURSOR_REHEAT_ALPHA_TARGET);
+				fg.d3ReheatSimulation();
+			}
+			// (Re-)arm the cooldown; every swipe frame extends the warm window
+			if (reheatTimer !== null) clearTimeout(reheatTimer);
+			reheatTimer = setTimeout(() => {
+				if (fg) (fg as unknown as { d3AlphaTarget: (v: number) => void }).d3AlphaTarget(0);
+				reheatTimer = null;
+			}, CURSOR_RIPPLE_SETTLE_MS);
+		}
 	}
 
 	function onMouseMove(e: MouseEvent) {
@@ -209,7 +238,7 @@ export function mountObsidianGraphBackground(
 				return x * x * (3 - 2 * x);
 			}
 
-			const ambientForce = createAmbientForce();
+			ambientForce = createAmbientForce();
 
 			function nodeRgb(node: ForceNode): string {
 				const t = node.type?.trim().toLowerCase();
@@ -295,6 +324,10 @@ export function mountObsidianGraphBackground(
 		cancelled = true;
 		cancelAnimationFrame(fadeRaf);
 		cancelAnimationFrame(rippleRaf);
+		if (reheatTimer !== null) {
+			clearTimeout(reheatTimer);
+			reheatTimer = null;
+		}
 		window.removeEventListener("resize", onResize);
 		window.removeEventListener("scroll", onScroll, scrollOpts);
 		window.removeEventListener("mousemove", onMouseMove);
