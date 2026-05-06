@@ -102,80 +102,83 @@ export const hero: HeroData = {
 	],
 };
 
-/** Listed services from site deploy config (`listed: true`), links on xallt.dev */
-const _allStuff: Stuff[] = [
-	{
-		name: "Tic80 Carts",
-		description: "Games made in TIC-80, a fantasy computer",
-		href: "https://xallt.dev/tic80-carts",
-		githubUrl: "https://github.com/Xallt/TIC80-Carts",
-		image: "/src/assets/gif/tic-carts/solar_system.gif",
-		listed: true,
-	},
-	{
-		name: "My reviews",
-		description: "My opinions on various things",
-		href: "https://xallt.dev/reviews",
-		githubUrl: undefined,
-		image: "/src/assets/img/stuff-preview/reviews-screenshot.jpg",
-		listed: true,
-	},
-	{
-		name: "Noise Texture Generator",
-		description: "Procedural noise textures.",
-		href: "https://xallt.dev/noise-texture-generator",
-		githubUrl: "https://github.com/Xallt/Noise-texture-generator",
-		image: "/src/assets/img/stuff-preview/NoiseGeneration.png",
-		listed: true,
-	},
-	{
-		name: "3D Typer",
-		description: "3D text powered by 2D polygon triangulation in Rust",
-		href: "https://o3d.xallt.dev",
-		githubUrl: "https://github.com/Xallt/o3d-rs",
-		image: "/src/assets/img/stuff-preview/o3d-screenshot.jpg",
-		listed: true,
-	},
-	{
-		name: "3D Books",
-		description: "Actual books, made interactive in 3D with Three.js",
-		href: "https://lib3d.xallt.dev",
-		githubUrl: "https://github.com/Xallt/TheInfiniteLibrary3D",
-		image: "/src/assets/img/stuff-preview/lib3d-screenshot.jpg",
-		listed: true,
-	},
-	{
-		name: "Wikinator",
-		description: "Wiki-oriented Flask app and experiments.",
-		href: "https://wikinator.xallt.dev",
-		githubUrl: "https://github.com/Xallt/Wikinator",
-		image: "/src/assets/img/stuff-preview/Wikinator.png",
-		listed: false,
-	},
-	{
-		name: "Love2D things",
-		description: "LÖVE2D games and prototypes.",
-		href: "https://xallt.dev/love2d",
-		githubUrl: "https://github.com/Xallt/Love2D-Stuff",
-		image: "/src/assets/gif/stuff-preview/pascal-fractal.gif",
-		listed: true,
-	},
-	{
-		name: "Predicate Generator",
-		description: "Generating mathematical statements infinitely",
-		href: "https://predgen.xallt.dev",
-		githubUrl: "https://github.com/Xallt/PredicateGenerator",
-		image: "/src/assets/img/stuff-preview/PredGen.png",
-		listed: true,
-	},
-	{
-		name: "Shadertoy",
-		description: "Just some fun shaders",
-		href: "https://www.shadertoy.com/user/KavabONga",
-		githubUrl: undefined,
-		image: "/src/assets/gif/stuff-preview/shadertoy.gif",
-		listed: true,
-	}
-];
+/** Listed services from site deploy config (`listed: true`), links on the configured domain */
+export function getStuff(domain: string): Stuff[] {
+	const allStuff: Stuff[] = [
+		{
+			name: "Tic80 Carts",
+			description: "Games made in TIC-80, a fantasy computer",
+			href: `https://${domain}/tic80-carts`,
+			githubUrl: "https://github.com/Xallt/TIC80-Carts",
+			image: "/src/assets/gif/tic-carts/solar_system.gif",
+			listed: true,
+		},
+		{
+			name: "My reviews",
+			description: "My opinions on various things",
+			href: `https://${domain}/reviews`,
+			githubUrl: undefined,
+			image: "/src/assets/img/stuff-preview/reviews-screenshot.jpg",
+			listed: true,
+		},
+		{
+			name: "Noise Texture Generator",
+			description: "Procedural noise textures.",
+			href: `https://${domain}/noise-texture-generator`,
+			githubUrl: "https://github.com/Xallt/Noise-texture-generator",
+			image: "/src/assets/img/stuff-preview/NoiseGeneration.png",
+			listed: true,
+		},
+		{
+			name: "3D Typer",
+			description: "3D text powered by 2D polygon triangulation in Rust",
+			href: `https://o3d.${domain}`,
+			githubUrl: "https://github.com/Xallt/o3d-rs",
+			image: "/src/assets/img/stuff-preview/o3d-screenshot.jpg",
+			listed: true,
+		},
+		{
+			name: "3D Books",
+			description: "Actual books, made interactive in 3D with Three.js",
+			href: `https://lib3d.${domain}`,
+			githubUrl: "https://github.com/Xallt/TheInfiniteLibrary3D",
+			image: "/src/assets/img/stuff-preview/lib3d-screenshot.jpg",
+			listed: true,
+		},
+		{
+			name: "Wikinator",
+			description: "Wiki-oriented Flask app and experiments.",
+			href: `https://wikinator.${domain}`,
+			githubUrl: "https://github.com/Xallt/Wikinator",
+			image: "/src/assets/img/stuff-preview/Wikinator.png",
+			listed: false,
+		},
+		{
+			name: "Love2D things",
+			description: "LÖVE2D games and prototypes.",
+			href: `https://${domain}/love2d`,
+			githubUrl: "https://github.com/Xallt/Love2D-Stuff",
+			image: "/src/assets/gif/stuff-preview/pascal-fractal.gif",
+			listed: true,
+		},
+		{
+			name: "Predicate Generator",
+			description: "Generating mathematical statements infinitely",
+			href: `https://predgen.${domain}`,
+			githubUrl: "https://github.com/Xallt/PredicateGenerator",
+			image: "/src/assets/img/stuff-preview/PredGen.png",
+			listed: true,
+		},
+		{
+			name: "Shadertoy",
+			description: "Just some fun shaders",
+			href: "https://www.shadertoy.com/user/KavabONga",
+			githubUrl: undefined,
+			image: "/src/assets/gif/stuff-preview/shadertoy.gif",
+			listed: true,
+		},
+	];
+	return allStuff.filter((s) => s.listed);
+}
 
-export const stuff: Stuff[] = _allStuff.filter((s) => s.listed);
+export const stuff: Stuff[] = getStuff(import.meta.env.DOMAIN);
