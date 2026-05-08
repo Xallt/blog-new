@@ -140,7 +140,7 @@ export function getStuff(domain: string): Stuff[] {
 		{
 			name: "3D Books",
 			description: "Actual books, made interactive in 3D with Three.js",
-			href: `https://lib3d.${domain}`,
+			href: `https://${domain}/lib3d`,
 			githubUrl: "https://github.com/Xallt/TheInfiniteLibrary3D",
 			image: "/src/assets/img/stuff-preview/lib3d-screenshot.jpg",
 			listed: true,
