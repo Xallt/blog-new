@@ -5,9 +5,6 @@ import SecondBrainApp from "../../components/SecondBrainApp";
 
 <BaseLayout title="Second Brain">
   <SecondBrainApp baseUrl={import.meta.env.BASE_URL} client:only="react" />
-  <div class="page second-brain-page">
-    <h1 class="second-brain-title">Second Brain</h1>
-  </div>
 </BaseLayout>
 
 <style is:global>
@@ -20,17 +17,3 @@ import SecondBrainApp from "../../components/SecondBrainApp";
   }
 </style>
 
-<style>
-  .second-brain-page {
-    position: relative;
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .second-brain-title {
-    color: rgba(130, 145, 170, 0.4);
-    font-size: 1.2rem;
-    font-weight: 400;
-    margin: 0;
-  }
-</style>

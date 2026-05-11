@@ -10,6 +10,7 @@ interface Props {
 export default function SecondBrainApp({ baseUrl }: Props) {
   const [params, setParams] = useState<GraphSimParams>(DEFAULT_GRAPH_PARAMS);
   const [mountKey, setMountKey] = useState(0);
+  const homeUrl = baseUrl.replace(/\/?$/, "/");
 
   return (
     <>
@@ -19,7 +20,12 @@ export default function SecondBrainApp({ baseUrl }: Props) {
         params={params}
         className="second-brain-graph"
       />
-      <GraphParamsPanel params={params} onChange={setParams} onRemount={() => setMountKey(k => k + 1)} />
+      <GraphParamsPanel
+        params={params}
+        onChange={setParams}
+        onRemount={() => setMountKey(k => k + 1)}
+        homeUrl={homeUrl}
+      />
     </>
   );
 }

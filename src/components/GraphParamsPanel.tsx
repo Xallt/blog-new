@@ -30,9 +30,10 @@ interface Props {
   params: GraphSimParams;
   onChange: (p: GraphSimParams) => void;
   onRemount: () => void;
+  homeUrl: string;
 }
 
-export default function GraphParamsPanel({ params, onChange, onRemount }: Props) {
+export default function GraphParamsPanel({ params, onChange, onRemount, homeUrl }: Props) {
   const [open, setOpen] = useState(true);
 
   function handleChange(key: keyof GraphSimParams, value: number) {
@@ -95,6 +96,11 @@ export default function GraphParamsPanel({ params, onChange, onRemount }: Props)
           />
         </div>
       ))}
+      <div style={{ marginTop: "0.5rem" }}>
+        <a href={homeUrl} style={{ display: "inline-block", background: "none", border: "1px solid rgba(130,145,170,0.3)", borderRadius: "4px", color: "inherit", cursor: "pointer", fontSize: "10px", padding: "1px 6px", textDecoration: "none" }}>
+          ← exit
+        </a>
+      </div>
     </div>
   );
 }
