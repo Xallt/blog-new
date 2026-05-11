@@ -105,6 +105,7 @@ export function mountObsidianGraphBackground(
 	let fg: ForceGraphInstance | null = null;
 	let cancelled = false;
 	let fadeRaf = 0;
+	let zoomIntervalId: ReturnType<typeof setInterval> | null = null;
 	let nodeFade = 0;
 
 	let rippleRaf = 0;
@@ -327,7 +328,7 @@ export function mountObsidianGraphBackground(
 			const kStart = 1;
 			const kEnd = 1.2;
 
-			const intervalId = setInterval(() => {
+			zoomIntervalId = setInterval(() => {
 				const now = performance.now();
 				const elapsed = now - start;
 				const t = Math.min(elapsed / duration, 1);
@@ -336,7 +337,7 @@ export function mountObsidianGraphBackground(
 				fg?.zoom(k);
 
 				if (t >= 1) {
-					clearInterval(intervalId);
+					clearInterval(zoomIntervalId!); zoomIntervalId = null;
 				}
 			}, 10);
 		})
@@ -355,6 +356,7 @@ export function mountObsidianGraphBackground(
 	function destroy() {
 		cancelled = true;
 		cancelAnimationFrame(fadeRaf);
+		if (zoomIntervalId !== null) { clearInterval(zoomIntervalId); zoomIntervalId = null; }
 		cancelAnimationFrame(rippleRaf);
 		if (reheatTimer !== null) {
 			clearTimeout(reheatTimer);
