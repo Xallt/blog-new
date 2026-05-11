@@ -13,6 +13,44 @@ type SimNode = {
 	vy?: number;
 };
 
+export interface GraphSimParams {
+  parallaxScrollK: number;
+  alphaDecay: number;
+  velocityDecay: number;
+  ambientJitter: number;
+  ambientAlphaFloor: number;
+  cursorRadius: number;
+  cursorImpulseStrength: number;
+  cursorImpulseAlphaFloor: number;
+  cursorReheatAlphaThreshold: number;
+  cursorReheatAlphaTarget: number;
+  cursorRippleSettleMs: number;
+  nodeAlpha: number;
+  linkAlpha: number;
+  linkWidth: number;
+  nodeFadeMs: number;
+  warmupTicks: number;
+}
+
+export const DEFAULT_GRAPH_PARAMS: GraphSimParams = {
+  parallaxScrollK: -0.18,
+  alphaDecay: 0.018,
+  velocityDecay: 0.12,
+  ambientJitter: 0.3,
+  ambientAlphaFloor: 0.02,
+  cursorRadius: 200,
+  cursorImpulseStrength: 0.2,
+  cursorImpulseAlphaFloor: 0.3,
+  cursorReheatAlphaThreshold: 0.8,
+  cursorReheatAlphaTarget: 1.0,
+  cursorRippleSettleMs: 4000,
+  nodeAlpha: 0.12,
+  linkAlpha: 0.22,
+  linkWidth: 0.6,
+  nodeFadeMs: 1100,
+  warmupTicks: 40,
+};
+
 const BG = "rgb(27, 27, 30)";
 const NODE_RGB = "130, 145, 170";
 /** Muted RGB triples for `type` from Obsidian frontmatter (export.py). */
@@ -22,49 +60,21 @@ const NODE_RGB_BY_TYPE: Record<string, string> = {
 	definition: "206, 168, 118",
 };
 const LINK_RGB = "85, 95, 115";
-const NODE_ALPHA = 0.12;
-const LINK_ALPHA = 0.22;
 
-const NODE_FADE_MS = 1100;
-
-/** Scroll parallax: background translate as fraction of window.scrollY (negative = moves opposite to scroll) */
-const PARALLAX_SCROLL_K = -0.18;
-
-/** Simulation alpha decay (library default ~0.0228) */
-const D3_ALPHA_DECAY = 0.018;
-/** Lower = velocities decay slower (default in d3-force ~0.4) */
-const D3_VELOCITY_DECAY = 0.12;
-/** Base velocity noise per tick; multiplied by max(alpha, AMBIENT_ALPHA_FLOOR) */
-const AMBIENT_JITTER = 0.3;
-const AMBIENT_ALPHA_FLOOR = 0.02;
-
-/** Cursor: graph-space influence radius (falloff from cursor position) */
-const CURSOR_RADIUS = 200;
-/** Scales graph-space mouse delta (not normalized — faster motion ⇒ larger kick) */
-const CURSOR_IMPULSE_STRENGTH = 0.2;
-const CURSOR_IMPULSE_ALPHA_FLOOR = 0.3;
-/**
- * On swipe: if alpha < this, set alphaTarget + reheat so D3 link/charge forces
- * actively propagate the disturbance. Guard prevents redundant resets when alpha
- * is already warm.
- */
-const CURSOR_REHEAT_ALPHA_THRESHOLD = 0.8;
-/** alphaTarget held during the ripple phase (sustains D3 forces without full reheat aggression) */
-const CURSOR_REHEAT_ALPHA_TARGET = 1.0;
-/** ms of cursor inactivity before alphaTarget is released back to 0 */
-const CURSOR_RIPPLE_SETTLE_MS = 4000;
-
-/** Once per frame: nudge nearby nodes along the mouse’s graph-space delta. */
+/** Once per frame: nudge nearby nodes along the mouse's graph-space delta. */
 function applyCursorImpulse(
 	nodes: SimNode[],
 	cx: number,
 	cy: number,
 	dgx: number,
 	dgy: number,
+	cursorRadius: number,
+	cursorImpulseStrength: number,
+	cursorImpulseAlphaFloor: number,
 ) {
 	if (dgx === 0 && dgy === 0) return;
-	const a = CURSOR_IMPULSE_ALPHA_FLOOR;
-	const R = CURSOR_RADIUS;
+	const a = cursorImpulseAlphaFloor;
+	const R = cursorRadius;
 	const R2 = R * R;
 	for (let i = 0, n = nodes.length; i < n; i++) {
 		const node = nodes[i];
@@ -78,40 +88,20 @@ function applyCursorImpulse(
 		const dist = Math.sqrt(d2);
 		const t = 1 - dist / R;
 		const w = t * t;
-		const s = CURSOR_IMPULSE_STRENGTH * w * a;
+		const s = cursorImpulseStrength * w * a;
 		node.vx = (node.vx ?? 0) + dgx * s;
 		node.vy = (node.vy ?? 0) + dgy * s;
 	}
-}
-
-function createAmbientForce() {
-	let nodes: SimNode[] = [];
-	let currentAlpha = 0;
-
-	function force(alpha: number) {
-		currentAlpha = alpha;
-		const a = Math.max(alpha, AMBIENT_ALPHA_FLOOR);
-		const j = AMBIENT_JITTER * a;
-		for (let i = 0, n = nodes.length; i < n; i++) {
-			const node = nodes[i];
-			if (node.x == null || node.y == null) continue;
-			node.vx = (node.vx ?? 0) + (Math.random() - 0.5) * j;
-			node.vy = (node.vy ?? 0) + (Math.random() - 0.5) * j;
-		}
-	}
-
-	force.initialize = (init: SimNode[]) => {
-		nodes = init;
-	};
-
-	return { force, getAlpha: () => currentAlpha };
 }
 
 /** Mount force-graph into `container`. Returns teardown for tests or view transitions. */
 export function mountObsidianGraphBackground(
 	container: HTMLElement,
 	baseUrl: string = "/",
-): () => void {
+	initialParams: GraphSimParams = DEFAULT_GRAPH_PARAMS,
+): { destroy: () => void; setParams: (next: GraphSimParams) => void } {
+	let p = { ...initialParams };
+
 	let fg: ForceGraphInstance | null = null;
 	let cancelled = false;
 	let fadeRaf = 0;
@@ -132,6 +122,29 @@ export function mountObsidianGraphBackground(
 	let lastResizeWidth = window.innerWidth;
 	let lastResizeHeight = window.innerHeight;
 
+	function createAmbientForce() {
+		let nodes: SimNode[] = [];
+		let currentAlpha = 0;
+
+		function force(alpha: number) {
+			currentAlpha = alpha;
+			const a = Math.max(alpha, p.ambientAlphaFloor);
+			const j = p.ambientJitter * a;
+			for (let i = 0, n = nodes.length; i < n; i++) {
+				const node = nodes[i];
+				if (node.x == null || node.y == null) continue;
+				node.vx = (node.vx ?? 0) + (Math.random() - 0.5) * j;
+				node.vy = (node.vy ?? 0) + (Math.random() - 0.5) * j;
+			}
+		}
+
+		force.initialize = (init: SimNode[]) => {
+			nodes = init;
+		};
+
+		return { force, getAlpha: () => currentAlpha };
+	}
+
 	/** Canvas height needed so parallax never reveals empty space below. */
 	function canvasHeight(): number {
 		const maxScroll = Math.max(
@@ -139,7 +152,7 @@ export function mountObsidianGraphBackground(
 			document.documentElement.scrollHeight - window.innerHeight,
 		);
 		return Math.ceil(
-			window.innerHeight + maxScroll * Math.abs(PARALLAX_SCROLL_K),
+			window.innerHeight + maxScroll * Math.abs(p.parallaxScrollK),
 		);
 	}
 
@@ -160,7 +173,7 @@ export function mountObsidianGraphBackground(
 	}
 
 	function applyParallax() {
-		const y = window.scrollY * PARALLAX_SCROLL_K;
+		const y = window.scrollY * p.parallaxScrollK;
 		container.style.transform = `translate3d(0, ${y}px, 0)`;
 	}
 
@@ -176,24 +189,33 @@ export function mountObsidianGraphBackground(
 		const rect = canvas.getBoundingClientRect();
 		const lx = lastClientX - rect.left;
 		const ly = lastClientY - rect.top;
-		const p = fg.screen2GraphCoords(lx, ly);
+		const coords = fg.screen2GraphCoords(lx, ly);
 		let dgx = 0;
 		let dgy = 0;
 		if (hasPrevGraphSample) {
-			dgx = p.x - prevGraphX;
-			dgy = p.y - prevGraphY;
+			dgx = coords.x - prevGraphX;
+			dgy = coords.y - prevGraphY;
 		}
-		prevGraphX = p.x;
-		prevGraphY = p.y;
+		prevGraphX = coords.x;
+		prevGraphY = coords.y;
 		hasPrevGraphSample = true;
 		const { nodes } = fg.graphData() as { nodes: SimNode[] };
-		applyCursorImpulse(nodes, p.x, p.y, dgx, dgy);
+		applyCursorImpulse(
+			nodes,
+			coords.x,
+			coords.y,
+			dgx,
+			dgy,
+			p.cursorRadius,
+			p.cursorImpulseStrength,
+			p.cursorImpulseAlphaFloor,
+		);
 
 		if (dgx !== 0 || dgy !== 0) {
 			// Only activate D3 forces when alpha is cold; guard prevents redundant resets
-			if (ambientForce && ambientForce.getAlpha() < CURSOR_REHEAT_ALPHA_THRESHOLD) {
+			if (ambientForce && ambientForce.getAlpha() < p.cursorReheatAlphaThreshold) {
 				// Hold alpha at a warm level so link springs / charge propagate the disturbance
-				(fg as unknown as { d3AlphaTarget: (v: number) => void }).d3AlphaTarget(CURSOR_REHEAT_ALPHA_TARGET);
+				(fg as unknown as { d3AlphaTarget: (v: number) => void }).d3AlphaTarget(p.cursorReheatAlphaTarget);
 				fg.d3ReheatSimulation();
 			}
 			// (Re-)arm the cooldown; every swipe frame extends the warm window
@@ -201,7 +223,7 @@ export function mountObsidianGraphBackground(
 			reheatTimer = setTimeout(() => {
 				if (fg) (fg as unknown as { d3AlphaTarget: (v: number) => void }).d3AlphaTarget(0);
 				reheatTimer = null;
-			}, CURSOR_RIPPLE_SETTLE_MS);
+			}, p.cursorRippleSettleMs);
 		}
 	}
 
@@ -255,20 +277,20 @@ export function mountObsidianGraphBackground(
 				.nodeLabel(() => "")
 				.nodeColor((n) => {
 					const node = n as ForceNode;
-					return `rgba(${nodeRgb(node)}, ${NODE_ALPHA * nodeFade})`;
+					return `rgba(${nodeRgb(node)}, ${p.nodeAlpha * nodeFade})`;
 				})
 				.nodeVal("val")
 				.nodeRelSize(3)
-				.linkColor(() => `rgba(${LINK_RGB}, ${LINK_ALPHA * nodeFade})`)
-				.linkWidth(0.6)
+				.linkColor(() => `rgba(${LINK_RGB}, ${p.linkAlpha * nodeFade})`)
+				.linkWidth(p.linkWidth)
 				.enablePointerInteraction(false)
 				.enableZoomInteraction(false)
 				.enablePanInteraction(false)
-				.warmupTicks(40)
+				.warmupTicks(p.warmupTicks)
 				.cooldownTicks(Infinity)
 				.cooldownTime(Infinity)
-				.d3AlphaDecay(D3_ALPHA_DECAY)
-				.d3VelocityDecay(D3_VELOCITY_DECAY)
+				.d3AlphaDecay(p.alphaDecay)
+				.d3VelocityDecay(p.velocityDecay)
 				.d3Force("ambient", ambientForce.force);
 
 			fg.onEngineStop(() => {
@@ -287,7 +309,7 @@ export function mountObsidianGraphBackground(
 			function tickNodeFade() {
 				if (cancelled || !fg) return;
 				const t = Math.min(
-					(performance.now() - fadeStart) / NODE_FADE_MS,
+					(performance.now() - fadeStart) / p.nodeFadeMs,
 					1,
 				);
 				nodeFade = smoothstep(0, 1, t);
@@ -320,7 +342,17 @@ export function mountObsidianGraphBackground(
 		})
 		.catch(() => { });
 
-	return () => {
+	function setParams(next: GraphSimParams) {
+		p = { ...next };
+		if (fg) {
+			fg.d3AlphaDecay(p.alphaDecay)
+				.d3VelocityDecay(p.velocityDecay)
+				.linkWidth(p.linkWidth);
+		}
+		applyParallax();
+	}
+
+	function destroy() {
 		cancelled = true;
 		cancelAnimationFrame(fadeRaf);
 		cancelAnimationFrame(rippleRaf);
@@ -337,5 +369,7 @@ export function mountObsidianGraphBackground(
 			fg = null;
 		}
 		container.style.transform = "";
-	};
+	}
+
+	return { destroy, setParams };
 }
