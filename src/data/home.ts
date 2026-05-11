@@ -177,6 +177,14 @@ export function getStuff(domain: string): Stuff[] {
 			image: "/src/assets/gif/stuff-preview/shadertoy.gif",
 			listed: true,
 		},
+		{
+			name: "Second Brain",
+			description: "Interactive Obsidian knowledge graph",
+			href: getUrl("second-brain"),
+			githubUrl: undefined,
+			image: null,
+			listed: true,
+		},
 	];
 	return allStuff.filter((s) => s.listed);
 }
