@@ -29,9 +29,10 @@ const SLIDERS: SliderDef[] = [
 interface Props {
   params: GraphSimParams;
   onChange: (p: GraphSimParams) => void;
+  onRemount: () => void;
 }
 
-export default function GraphParamsPanel({ params, onChange }: Props) {
+export default function GraphParamsPanel({ params, onChange, onRemount }: Props) {
   const [open, setOpen] = useState(true);
 
   function handleChange(key: keyof GraphSimParams, value: number) {
@@ -63,9 +64,14 @@ export default function GraphParamsPanel({ params, onChange }: Props) {
         <strong style={{ fontSize: "12px" }}>Graph Params</strong>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {open && (
-            <button onClick={handleReset} style={{ background: "none", border: "1px solid rgba(130,145,170,0.3)", borderRadius: "4px", color: "inherit", cursor: "pointer", fontSize: "10px", padding: "1px 6px" }}>
-              reset
-            </button>
+            <>
+              <button onClick={handleReset} style={{ background: "none", border: "1px solid rgba(130,145,170,0.3)", borderRadius: "4px", color: "inherit", cursor: "pointer", fontSize: "10px", padding: "1px 6px" }}>
+                reset
+              </button>
+              <button onClick={onRemount} style={{ background: "none", border: "1px solid rgba(130,145,170,0.3)", borderRadius: "4px", color: "inherit", cursor: "pointer", fontSize: "10px", padding: "1px 6px" }}>
+                remount
+              </button>
+            </>
           )}
           <button onClick={() => setOpen(o => !o)} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", fontSize: "14px" }}>
             {open ? "−" : "+"}

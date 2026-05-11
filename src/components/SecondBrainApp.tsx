@@ -9,15 +9,17 @@ interface Props {
 
 export default function SecondBrainApp({ baseUrl }: Props) {
   const [params, setParams] = useState<GraphSimParams>(DEFAULT_GRAPH_PARAMS);
+  const [mountKey, setMountKey] = useState(0);
 
   return (
     <>
       <ObsidianGraphBackground
+        key={mountKey}
         baseUrl={baseUrl}
         params={params}
         className="second-brain-graph"
       />
-      <GraphParamsPanel params={params} onChange={setParams} />
+      <GraphParamsPanel params={params} onChange={setParams} onRemount={() => setMountKey(k => k + 1)} />
     </>
   );
 }
