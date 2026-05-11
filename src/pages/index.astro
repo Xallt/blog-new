@@ -1,82 +1,79 @@
 ---
 import Hero from "../components/Hero.astro";
 import Nav from "../components/Nav.astro";
+import ObsidianGraphBackground from "../components/ObsidianGraphBackground.tsx";
 import PostList from "../components/PostList.astro";
 import StuffGrid from "../components/StuffGrid.astro";
 import {
-	getAllPosts,
-	hero,
-	navItems,
-	parsePost,
-	stuff,
-	type Post,
+  getAllPosts,
+  hero,
+  navItems,
+  parsePost,
+  stuff,
+  type Post,
 } from "../data/home";
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 const allPosts = await getAllPosts();
 
 const recentPosts: Post[] = [...allPosts]
-	.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-	.slice(0, 3)
-	.map((entry) => parsePost(entry));
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3)
+  .map((entry) => parsePost(entry));
 
 const previewStuff = stuff.filter((s) => s.image != null).slice(0, 3);
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">
-	<div id="obsidian-graph-bg" class="obsidian-graph-bg" aria-hidden="true">
-	</div>
-	<div class="page page--with-graph">
-		<Nav items={navItems} />
-		<Hero hero={hero} />
-		<section class="section" aria-labelledby="stuff-heading">
-			<h2 id="stuff-heading" class="stuff-section-title">Stuff</h2>
-			<StuffGrid stuff={previewStuff} />
-			<p class="home-section-cta">
-				<a href={`${import.meta.env.BASE_URL}stuff`}>See more</a>
-			</p>
-		</section>
-		<section class="section" aria-labelledby="posts-heading">
-			<h2 id="posts-heading" class="posts-section-title">Posts</h2>
-			<PostList posts={recentPosts} />
-			<p class="home-section-cta">
-				<a href={`${import.meta.env.BASE_URL}posts`}>Read more</a>
-			</p>
-		</section>
-	</div>
+  <ObsidianGraphBackground
+    client:only="react"
+    baseUrl={import.meta.env.BASE_URL}
+    className="obsidian-graph-bg"
+  />
+  <div class="page page--with-graph">
+    <Nav items={navItems} />
+    <Hero hero={hero} />
+    <section class="section" aria-labelledby="stuff-heading">
+      <h2 id="stuff-heading" class="stuff-section-title">Stuff</h2>
+      <StuffGrid stuff={previewStuff} />
+      <p class="home-section-cta">
+        <a href={`${import.meta.env.BASE_URL}stuff`}>See more</a>
+      </p>
+    </section>
+    <section class="section" aria-labelledby="posts-heading">
+      <h2 id="posts-heading" class="posts-section-title">Posts</h2>
+      <PostList posts={recentPosts} />
+      <p class="home-section-cta">
+        <a href={`${import.meta.env.BASE_URL}posts`}>Read more</a>
+      </p>
+    </section>
+  </div>
 </BaseLayout>
 
-<script>
-	import { mountObsidianGraphBackground } from "../components/ObsidianGraphBackground.ts";
-
-	const el = document.getElementById("obsidian-graph-bg");
-	if (el) mountObsidianGraphBackground(el, import.meta.env.BASE_URL);
-</script>
-
 <style is:global>
-	.obsidian-graph-bg {
-		position: fixed;
-		inset: 0;
-		z-index: 0;
-		pointer-events: none;
-		opacity: 0.5;
-		will-change: transform;
-	}
+  .obsidian-graph-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    will-change: transform;
+  }
 </style>
 
 <style>
-	.page--with-graph {
-		position: relative;
-		z-index: 1;
-	}
+  .page--with-graph {
+    position: relative;
+    z-index: 1;
+  }
 
-	.section {
-		margin-bottom: var(--space-xl);
-	}
+  .section {
+    margin-bottom: var(--space-xl);
+  }
 
-	.home-section-cta {
-		margin: var(--space-md) 0 0;
-		text-align: center;
-		font-size: calc(1.05rem);
-	}
+  .home-section-cta {
+    margin: var(--space-md) 0 0;
+    text-align: center;
+    font-size: calc(1.05rem);
+  }
 </style>

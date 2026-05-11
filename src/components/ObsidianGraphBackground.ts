@@ -14,41 +14,41 @@ type SimNode = {
 };
 
 export interface GraphSimParams {
-  parallaxScrollK: number;
-  alphaDecay: number;
-  velocityDecay: number;
-  ambientJitter: number;
-  ambientAlphaFloor: number;
-  cursorRadius: number;
-  cursorImpulseStrength: number;
-  cursorImpulseAlphaFloor: number;
-  cursorReheatAlphaThreshold: number;
-  cursorReheatAlphaTarget: number;
-  cursorRippleSettleMs: number;
-  nodeAlpha: number;
-  linkAlpha: number;
-  linkWidth: number;
-  nodeFadeMs: number;
-  warmupTicks: number;
+	parallaxScrollK: number;
+	alphaDecay: number;
+	velocityDecay: number;
+	ambientJitter: number;
+	ambientAlphaFloor: number;
+	cursorRadius: number;
+	cursorImpulseStrength: number;
+	cursorImpulseAlphaFloor: number;
+	cursorReheatAlphaThreshold: number;
+	cursorReheatAlphaTarget: number;
+	cursorRippleSettleMs: number;
+	nodeAlpha: number;
+	linkAlpha: number;
+	linkWidth: number;
+	nodeFadeMs: number;
+	warmupTicks: number;
 }
 
 export const DEFAULT_GRAPH_PARAMS: GraphSimParams = {
-  parallaxScrollK: -0.18,
-  alphaDecay: 0.018,
-  velocityDecay: 0.12,
-  ambientJitter: 0.3,
-  ambientAlphaFloor: 0.02,
-  cursorRadius: 200,
-  cursorImpulseStrength: 0.2,
-  cursorImpulseAlphaFloor: 0.3,
-  cursorReheatAlphaThreshold: 0.8,
-  cursorReheatAlphaTarget: 1.0,
-  cursorRippleSettleMs: 4000,
-  nodeAlpha: 0.12,
-  linkAlpha: 0.22,
-  linkWidth: 0.6,
-  nodeFadeMs: 1100,
-  warmupTicks: 40,
+	parallaxScrollK: -0.18,
+	alphaDecay: 0.018,
+	velocityDecay: 0.12,
+	ambientJitter: 0.3,
+	ambientAlphaFloor: 0.02,
+	cursorRadius: 200,
+	cursorImpulseStrength: 0.2,
+	cursorImpulseAlphaFloor: 0.3,
+	cursorReheatAlphaThreshold: 0.8,
+	cursorReheatAlphaTarget: 1.0,
+	cursorRippleSettleMs: 4000,
+	nodeAlpha: 0.12,
+	linkAlpha: 0.22,
+	linkWidth: 0.6,
+	nodeFadeMs: 1100,
+	warmupTicks: 40,
 };
 
 const BG = "rgb(27, 27, 30)";
