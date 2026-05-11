@@ -182,7 +182,7 @@ export function getStuff(domain: string): Stuff[] {
 			description: "Interactive Obsidian knowledge graph",
 			href: getUrl("second-brain"),
 			githubUrl: undefined,
-			image: null,
+			image: "/src/assets/img/stuff-preview/graph-screenshot.png",
 			listed: true,
 		},
 	];
