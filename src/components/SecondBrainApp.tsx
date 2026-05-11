@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ObsidianGraphBackground from "./ObsidianGraphBackground.tsx";
 import GraphParamsPanel from "./GraphParamsPanel";
-import { DEFAULT_GRAPH_PARAMS, type GraphSimParams } from "./ObsidianGraphBackground";
+import { DEFAULT_GRAPH_PARAMS, type GraphSimParams } from "./ObsidianGraphBackground.ts";
 
 interface Props {
   baseUrl: string;
