@@ -130,6 +130,14 @@ export function getStuff(domain: string): Stuff[] {
 			listed: true,
 		},
 		{
+			name: "Frogs",
+			description: "Frogs I collected over the years",
+			href: getUrl("frogs"),
+			githubUrl: undefined,
+			image: "/src/assets/img/frogs/family-17-05-2026.jpg",
+			listed: true,
+		},
+		{
 			name: "3D Typer",
 			description: "3D text powered by 2D polygon triangulation in Rust",
 			href: `https://o3d.${domain}`,
@@ -179,7 +187,7 @@ export function getStuff(domain: string): Stuff[] {
 		},
 		{
 			name: "Second Brain",
-			description: "Interactive Obsidian knowledge graph",
+			description: "Graph generated from my Obsidian vault (WIP)",
 			href: getUrl("second-brain"),
 			githubUrl: undefined,
 			image: "/src/assets/img/stuff-preview/graph-screenshot.png",

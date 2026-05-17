@@ -1,0 +1,163 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import Nav from "../../components/Nav.astro";
+import { familyImage, frogs } from "../../data/frogs";
+import { navItems } from "../../data/home";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const frogImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/img/frogs/*.{jpeg,jpg,png}",
+);
+
+async function loadFrog(file: string): Promise<ImageMetadata> {
+  const key = `/src/assets/img/frogs/${file}`;
+  const load = frogImages[key];
+  if (!load) {
+    throw new Error(`Frog image "${key}" not found in glob`);
+  }
+  return (await load()).default;
+}
+
+const family = await loadFrog(familyImage);
+const items = await Promise.all(
+  frogs.map(async (f) => ({ ...f, meta: await loadFrog(f.file) })),
+);
+---
+
+<BaseLayout title="Dmitry Shabat — Frogs">
+  <div class="page">
+    <Nav items={navItems} />
+    <section class="section" aria-labelledby="frogs-heading">
+      <h2 id="frogs-heading" class="stuff-section-title">Frogs</h2>
+      <figure class="frogs-banner">
+        <Image
+          src={family}
+          alt="The frog family"
+          class="frogs-banner-img"
+          loading="eager"
+        />
+        <figcaption class="frogs-banner-caption">
+          The family, as of 2026-05-17
+        </figcaption>
+      </figure>
+      <h3 class="frogs-gallery-heading">Gallery - {frogs.length} as of now</h3>
+      <div class="frogs-grid">
+        {
+          items.map((f) => (
+            <figure class="frog-item">
+              <Image
+                src={f.meta}
+                alt={f.name}
+                class="frog-img"
+                loading="lazy"
+              />
+              <figcaption class="frog-caption">
+                <span class="frog-name">{f.name}</span>
+                {f.origin && <span class="frog-origin">{f.origin}</span>}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .stuff-section-title {
+    font-family: var(--font-family-heading);
+    font-size: clamp(1.75rem, 4vw, 2.35rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin: 0 0 var(--space-md);
+    text-align: center;
+    color: var(--heading-color);
+  }
+
+  .frogs-banner {
+    margin: 0 auto var(--space-lg);
+    max-width: 42rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .frogs-banner-img {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .frogs-banner-caption {
+    margin-top: var(--space-xs);
+    font-family: var(--font-family-base);
+    font-size: 1rem;
+    color: var(--text-muted-color);
+  }
+
+  .frogs-gallery-heading {
+    margin: 0 0 var(--space-md);
+    text-align: center;
+    font-family: var(--font-family-heading);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--heading-color);
+  }
+
+  .frogs-grid {
+    column-count: 3;
+    column-gap: var(--space-md);
+  }
+
+  @media (max-width: 960px) {
+    .frogs-grid {
+      column-count: 2;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .frogs-grid {
+      column-count: 1;
+    }
+  }
+
+  .frog-item {
+    break-inside: avoid;
+    margin: 0 0 var(--space-md);
+    display: inline-block;
+    width: 100%;
+  }
+
+  .frog-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+  }
+
+  .frog-caption {
+    margin-top: var(--space-xs);
+    text-align: center;
+    font-family: var(--font-family-base);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .frog-name {
+    font-size: 1rem;
+    color: var(--text-color);
+  }
+
+  .frog-origin {
+    font-size: 0.8rem;
+    color: var(--text-muted-color);
+  }
+</style>
