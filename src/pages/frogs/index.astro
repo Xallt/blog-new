@@ -184,18 +184,6 @@ const items = await Promise.all(
     column-gap: var(--space-md);
   }
 
-  @media (max-width: 960px) {
-    .frogs-grid {
-      column-count: 2;
-    }
-  }
-
-  @media (max-width: 520px) {
-    .frogs-grid {
-      column-count: 1;
-    }
-  }
-
   .frog-item {
     break-inside: avoid;
     margin: 0 0 var(--space-md);
@@ -226,6 +214,7 @@ const items = await Promise.all(
     z-index: 1;
     width: 100%;
     height: auto;
+    max-height: none;
     display: block;
     opacity: 0;
     transition: opacity 0.4s ease;
