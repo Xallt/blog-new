@@ -58,6 +58,7 @@ const items = await Promise.all(
             alt="The frog family"
             class="frogs-banner-img"
             loading="eager"
+            fetchpriority="high"
             data-fade
           />
         </div>
@@ -68,14 +69,15 @@ const items = await Promise.all(
       <h3 class="frogs-gallery-heading">Gallery - {frogs.length} as of now</h3>
       <div class="frogs-grid">
         {
-          items.map((f) => (
+          items.map((f, i) => (
             <figure class="frog-item">
               <div class="frog-img-wrap" style={`--lqip: url(${f.lqip})`}>
                 <Image
                   src={f.meta}
                   alt={f.name}
                   class="frog-img"
-                  loading="lazy"
+                  loading={i < 6 ? "eager" : "lazy"}
+                  fetchpriority={i < 3 ? "high" : i < 6 ? "auto" : "low"}
                   data-fade
                 />
               </div>
