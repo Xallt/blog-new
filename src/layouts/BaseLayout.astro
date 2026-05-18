@@ -42,6 +42,20 @@ const { title, description = "Dmitry Shabat — portfolio and stuff" } =
 	</head>
 	<body>
 		<slot />
+		<script is:inline>
+			(() => {
+				const mark = (img) => img.classList.add("loaded");
+				const apply = (root) => {
+					root.querySelectorAll("img[data-fade]").forEach((img) => {
+						if (img.dataset.fadeBound) return;
+						img.dataset.fadeBound = "1";
+						if (img.complete && img.naturalWidth > 0) mark(img);
+						else img.addEventListener("load", () => mark(img), { once: true });
+					});
+				};
+				apply(document);
+			})();
+		</script>
 	</body>
 </html>
 

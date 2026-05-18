@@ -1,0 +1,125 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import sharp from "sharp";
+
+interface Props {
+	src: string;
+	alt: string;
+	loading?: "eager" | "lazy";
+	fetchpriority?: "high" | "auto" | "low";
+	class?: string;
+	wrapClass?: string;
+}
+
+const {
+	src,
+	alt,
+	loading = "lazy",
+	fetchpriority = "auto",
+	class: imgClass,
+	wrapClass,
+} = Astro.props;
+
+const rasterImages = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/assets/**/*.{jpeg,jpg,png}",
+);
+const gifUrls = import.meta.glob<string>("/src/assets/**/*.gif", {
+	import: "default",
+	query: "?url",
+});
+
+const key = src.trim();
+const isGif = /\.gif$/i.test(key);
+
+let meta: ImageMetadata | null = null;
+let gifSrc: string | null = null;
+
+if (isGif) {
+	const load = gifUrls[key];
+	if (!load) {
+		throw new Error(`"${key}" not in glob "/src/assets/**/*.gif"`);
+	}
+	gifSrc = await load();
+} else {
+	const load = rasterImages[key];
+	if (!load) {
+		throw new Error(
+			`"${key}" not in glob "/src/assets/**/*.{jpeg,jpg,png}"`,
+		);
+	}
+	meta = (await load()).default;
+}
+
+async function makeLqip(relKey: string): Promise<string> {
+	const abs = path.join(process.cwd(), relKey.replace(/^\//, ""));
+	const buf = await readFile(abs);
+	const out = await sharp(buf, { animated: false })
+		.resize(24, null, { fit: "inside" })
+		.webp({ quality: 40 })
+		.toBuffer();
+	return `data:image/webp;base64,${out.toString("base64")}`;
+}
+
+const lqip = await makeLqip(key);
+---
+
+<div class:list={["blur-image-wrap", wrapClass]} style={`--lqip: url(${lqip})`}>
+	{
+		gifSrc && (
+			<img
+				src={gifSrc}
+				alt={alt}
+				class:list={["blur-image", imgClass]}
+				loading={loading}
+				fetchpriority={fetchpriority}
+				data-fade
+			/>
+		)
+	}
+	{
+		meta && (
+			<Image
+				src={meta}
+				alt={alt}
+				class:list={["blur-image", imgClass]}
+				loading={loading}
+				fetchpriority={fetchpriority}
+				data-fade
+			/>
+		)
+	}
+</div>
+
+<style>
+	.blur-image-wrap {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.blur-image-wrap::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background-image: var(--lqip);
+		background-size: cover;
+		background-position: center;
+		filter: blur(14px);
+		transform: scale(1.1);
+		z-index: 0;
+	}
+
+	.blur-image {
+		position: relative;
+		z-index: 1;
+		display: block;
+		opacity: 0;
+		transition: opacity 0.4s ease;
+	}
+
+	.blur-image.loaded {
+		opacity: 1;
+	}
+</style>

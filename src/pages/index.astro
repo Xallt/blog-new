@@ -21,7 +21,7 @@ const recentPosts: Post[] = [...allPosts]
   .slice(0, 3)
   .map((entry) => parsePost(entry));
 
-const previewStuff = stuff.filter((s) => s.image != null).slice(0, 3);
+const previewStuff = stuff.filter((s) => s.image != null).slice(0, 6);
 ---
 
 <BaseLayout title="Dmitry Shabat — Home">

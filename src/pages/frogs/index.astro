@@ -1,46 +1,11 @@
 ---
-import type { ImageMetadata } from "astro";
-import { Image } from "astro:assets";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import sharp from "sharp";
+import BlurImage from "../../components/BlurImage.astro";
 import Nav from "../../components/Nav.astro";
 import { familyImage, frogs } from "../../data/frogs";
 import { navItems } from "../../data/home";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-const frogImages = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/img/frogs/*.{jpeg,jpg,png}",
-);
-
-async function loadFrog(file: string): Promise<ImageMetadata> {
-  const key = `/src/assets/img/frogs/${file}`;
-  const load = frogImages[key];
-  if (!load) {
-    throw new Error(`Frog image "${key}" not found in glob`);
-  }
-  return (await load()).default;
-}
-
-async function makeLqip(file: string): Promise<string> {
-  const abs = path.join(process.cwd(), "src/assets/img/frogs", file);
-  const buf = await readFile(abs);
-  const out = await sharp(buf)
-    .resize(24, null, { fit: "inside" })
-    .webp({ quality: 40 })
-    .toBuffer();
-  return `data:image/webp;base64,${out.toString("base64")}`;
-}
-
-const family = await loadFrog(familyImage);
-const familyLqip = await makeLqip(familyImage);
-const items = await Promise.all(
-  frogs.map(async (f) => ({
-    ...f,
-    meta: await loadFrog(f.file),
-    lqip: await makeLqip(f.file),
-  })),
-);
+const frogKey = (file: string) => `/src/assets/img/frogs/${file}`;
 ---
 
 <BaseLayout title="Dmitry Shabat — Frogs">
@@ -49,19 +14,14 @@ const items = await Promise.all(
     <section class="section" aria-labelledby="frogs-heading">
       <h2 id="frogs-heading" class="stuff-section-title">Frogs</h2>
       <figure class="frogs-banner">
-        <div
-          class="frogs-banner-img-wrap"
-          style={`--lqip: url(${familyLqip})`}
-        >
-          <Image
-            src={family}
-            alt="The frog family"
-            class="frogs-banner-img"
-            loading="eager"
-            fetchpriority="high"
-            data-fade
-          />
-        </div>
+        <BlurImage
+          src={frogKey(familyImage)}
+          alt="The frog family"
+          loading="eager"
+          fetchpriority="high"
+          wrapClass="frogs-banner-img-wrap"
+          class="frogs-banner-img"
+        />
         <figcaption class="frogs-banner-caption">
           The family, as of 2026-05-17
         </figcaption>
@@ -69,18 +29,16 @@ const items = await Promise.all(
       <h3 class="frogs-gallery-heading">Gallery - {frogs.length} as of now</h3>
       <div class="frogs-grid">
         {
-          items.map((f, i) => (
+          frogs.map((f, i) => (
             <figure class="frog-item">
-              <div class="frog-img-wrap" style={`--lqip: url(${f.lqip})`}>
-                <Image
-                  src={f.meta}
-                  alt={f.name}
-                  class="frog-img"
-                  loading={i < 6 ? "eager" : "lazy"}
-                  fetchpriority={i < 3 ? "high" : i < 6 ? "auto" : "low"}
-                  data-fade
-                />
-              </div>
+              <BlurImage
+                src={frogKey(f.file)}
+                alt={f.name}
+                loading={i < 6 ? "eager" : "lazy"}
+                fetchpriority={i < 3 ? "high" : i < 6 ? "auto" : "low"}
+                wrapClass="frog-img-wrap"
+                class="frog-img"
+              />
               <figcaption class="frog-caption">
                 <span class="frog-name">{f.name}</span>
                 {f.origin && <span class="frog-origin">{f.origin}</span>}
@@ -92,17 +50,6 @@ const items = await Promise.all(
     </section>
   </div>
 </BaseLayout>
-
-<script is:inline>
-  (() => {
-    const mark = (img) => img.classList.add("loaded");
-    const imgs = document.querySelectorAll("img[data-fade]");
-    imgs.forEach((img) => {
-      if (img.complete && img.naturalWidth > 0) mark(img);
-      else img.addEventListener("load", () => mark(img), { once: true });
-    });
-  })();
-</script>
 
 <style>
   .section {
@@ -127,40 +74,17 @@ const items = await Promise.all(
     align-items: center;
   }
 
-  .frogs-banner-img-wrap {
-    position: relative;
-    overflow: hidden;
+  .frogs-banner :global(.frogs-banner-img-wrap) {
     border-radius: 4px;
     width: 100%;
     max-height: 60vh;
   }
 
-  .frogs-banner-img-wrap::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: var(--lqip);
-    background-size: cover;
-    background-position: center;
-    filter: blur(14px);
-    transform: scale(1.1);
-    z-index: 0;
-  }
-
-  .frogs-banner-img {
-    position: relative;
-    z-index: 1;
+  .frogs-banner :global(.frogs-banner-img) {
     width: 100%;
     height: auto;
     max-height: 60vh;
     object-fit: contain;
-    display: block;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .frogs-banner-img.loaded {
-    opacity: 1;
   }
 
   .frogs-banner-caption {
@@ -191,37 +115,13 @@ const items = await Promise.all(
     width: 100%;
   }
 
-  .frog-img-wrap {
-    position: relative;
-    overflow: hidden;
+  .frog-item :global(.frog-img-wrap) {
     border-radius: 4px;
   }
 
-  .frog-img-wrap::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: var(--lqip);
-    background-size: cover;
-    background-position: center;
-    filter: blur(14px);
-    transform: scale(1.1);
-    z-index: 0;
-  }
-
-  .frog-img {
-    position: relative;
-    z-index: 1;
+  .frog-item :global(.frog-img) {
     width: 100%;
     height: auto;
-    max-height: none;
-    display: block;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .frog-img.loaded {
-    opacity: 1;
   }
 
   .frog-caption {
