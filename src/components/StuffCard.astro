@@ -12,12 +12,14 @@ const { stuff } = Astro.props;
 <div class="stuff-card">
 	{
 		stuff.image && (
-			<BlurImage
-				src={stuff.image}
-				alt={stuff.name}
-				wrapClass="stuff-card-media"
-				class="stuff-card-img"
-			/>
+			<a class="stuff-card-media-link" href={stuff.href}>
+				<BlurImage
+					src={stuff.image}
+					alt={stuff.name}
+					wrapClass="stuff-card-media"
+					class="stuff-card-img"
+				/>
+			</a>
 		)
 	}
 	<div class="stuff-card-title-row">
@@ -62,6 +64,14 @@ const { stuff } = Astro.props;
 		width: 100%;
 		height: 8rem;
 		border-radius: 0;
+	}
+
+	.stuff-card-media-link {
+		display: block;
+		position: relative;
+		z-index: 1;
+		color: inherit;
+		text-decoration: none;
 	}
 
 	.stuff-card :global(.stuff-card-img) {
