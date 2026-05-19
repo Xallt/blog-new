@@ -31,4 +31,5 @@ export const frogs: Frog[] = [
 	{ file: "small-coin.jpg", name: "Frog on tiny coin" },
 	{ file: "small-water-grown.jpg", name: "Water-grown frog", origin: "Gift from my wife. Came in one of those sets where it's an egg you put in water, and something pops out of it" },
 	{ file: "tadpole-unknown.jpg", name: "Tiny knit tadpole" },
+	{ file: "knit-cute-office.jpg", name: "Cute knit frog I put on my office desk" },
 ];
