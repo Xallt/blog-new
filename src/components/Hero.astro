@@ -1,168 +1,191 @@
 ---
 import { Image } from "astro:assets";
 import heroPortrait from "../assets/me/hero.jpg";
-import { type HeroData, type SocialLink, socialLinkRel } from "../data/home";
+import {
+  getUrl,
+  type HeroData,
+  type SocialLink,
+  socialLinkRel,
+} from "../data/home";
 import WebNeko from "./webneko.html";
 
 interface Props {
-	hero: HeroData;
+  hero: HeroData;
 }
 
 const { hero } = Astro.props;
 ---
 
 <section class="hero section" aria-labelledby="hero-heading">
-	<div class="hero-inner">
-		<div class="avatar-ring" aria-hidden="true">
-			<Image
-				src={heroPortrait}
-				alt=""
-				class="avatar-img"
-				width={500}
-				height={500}
-				loading="eager"
-				fetchpriority="high"
-			/>
-		</div>
+  <div class="hero-inner">
+    <a href={getUrl("about")} class="avatar-link" aria-label="About">
+      <div class="avatar-ring">
+        <Image
+          src={heroPortrait}
+          alt=""
+          class="avatar-img"
+          width={500}
+          height={500}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </a>
 
-		<h1 id="hero-heading" class="hero-name">
-			{hero.name}
-		</h1>
-		<p class="hero-title">
-			{hero.title}
-			<br />
-			{hero.neko && <WebNeko />}
-		</p>
-		<nav class="hero-social" aria-label="Social links">
-			{
-				hero.socialLinks.map((link: SocialLink) => (
-					<a
-						class="hero-social-link"
-						href={link.url}
-						aria-label={link.url}
-						target={link.noblank ? undefined : "_blank"}
-						rel={socialLinkRel(link)}
-					>
-						<i
-							class:list={[link.icon, "hero-social-icon"]}
-							aria-hidden="true"
-						/>
-					</a>
-				))
-			}
-		</nav>
-		<p class="hero-bio">{hero.bio}</p>
-	</div>
+    <h1 id="hero-heading" class="hero-name">
+      {hero.name}
+    </h1>
+    <p class="hero-title">
+      {hero.title}
+      <br />
+      {hero.neko && <WebNeko />}
+    </p>
+    <nav class="hero-social" aria-label="Social links">
+      {
+        hero.socialLinks.map((link: SocialLink) => (
+          <a
+            class="hero-social-link"
+            href={link.url}
+            aria-label={link.url}
+            target={link.noblank ? undefined : "_blank"}
+            rel={socialLinkRel(link)}
+          >
+            <i
+              class:list={[link.icon, "hero-social-icon"]}
+              aria-hidden="true"
+            />
+          </a>
+        ))
+      }
+    </nav>
+    <p class="hero-bio">{hero.bio}</p>
+  </div>
 </section>
 
 <style>
-	.hero {
-		position: relative;
-		text-align: center;
-		padding-top: var(--space-xs);
-		padding-bottom: var(--space-lg);
-		margin-bottom: var(--space-md);
-	}
+  .hero {
+    position: relative;
+    text-align: center;
+    padding-top: var(--space-xs);
+    padding-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
 
-	.hero-graph {
-		position: absolute;
-		inset: 0 0 auto 0;
-		height: 9rem;
-		overflow: hidden;
-		pointer-events: none;
-		opacity: 0.9;
-	}
+  .hero-graph {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 9rem;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.9;
+  }
 
-	.hero-graph-svg {
-		width: 100%;
-		height: 100%;
-		display: block;
-	}
+  .hero-graph-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
-	.hero-inner {
-		position: relative;
-		z-index: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding-top: 1.5rem;
-	}
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1.5rem;
+  }
 
-	.avatar-ring {
-		width: 11rem;
-		height: 11rem;
-		margin-bottom: var(--space-md);
-		border-radius: 50%;
-		overflow: hidden;
-		flex-shrink: 0;
-		border: 2px solid var(--border-color);
-	}
+  .avatar-link {
+    display: block;
+    flex-shrink: 0;
+    margin-bottom: var(--space-md);
+    border-radius: 50%;
+    text-decoration: none;
+    transition: transform 0.25s ease;
+  }
 
-	.avatar-img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center;
-		display: block;
-	}
+  .avatar-link:hover {
+    transform: scale(1.02);
+  }
 
-	.hero-name {
-		margin: 0 0 var(--space-xs);
-		font-size: 1.75rem;
-		font-weight: 400;
-		line-height: 1.2;
-	}
+  .avatar-link:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 4px;
+  }
 
-	.hero-handle {
-		font-weight: 400;
-		opacity: 0.9;
-	}
+  .avatar-ring {
+    width: 11rem;
+    height: 11rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+  }
 
-	.hero-title {
-		margin: 0 0 var(--space-md);
-		font-size: 1.15rem;
-		color: var(--text-muted-color);
-	}
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
 
-	.hero-social {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.65rem;
-		justify-content: center;
-		margin-bottom: var(--space-md);
-	}
+  .hero-name {
+    margin: 0 0 var(--space-xs);
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
 
-	.hero-social-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 50%;
-		border: 1.5px solid var(--border-color);
-		color: var(--text-muted-color);
-		text-decoration: none;
-		transition:
-			color 0.15s ease,
-			border-color 0.15s ease,
-			background 0.15s ease,
-			transform 0.15s ease;
-	}
+  .hero-handle {
+    font-weight: 400;
+    opacity: 0.9;
+  }
 
-	.hero-social-link:hover {
-		color: var(--link-color);
-		border-color: var(--link-color);
-		background: color-mix(in srgb, var(--link-color) 12%, transparent);
-	}
+  .hero-title {
+    margin: 0 0 var(--space-md);
+    font-size: 1.15rem;
+    color: var(--text-muted-color);
+  }
 
-	.hero-social-icon {
-		font-size: 1.05rem;
-		line-height: 1;
-	}
+  .hero-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: center;
+    margin-bottom: var(--space-md);
+  }
 
-	.hero-bio {
-		margin: 0;
-		max-width: 80ch;
-		font-size: 1.05rem;
-	}
+  .hero-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-color);
+    color: var(--text-muted-color);
+    text-decoration: none;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease,
+      background 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .hero-social-link:hover {
+    color: var(--link-color);
+    border-color: var(--link-color);
+    background: color-mix(in srgb, var(--link-color) 12%, transparent);
+  }
+
+  .hero-social-icon {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .hero-bio {
+    margin: 0;
+    max-width: 80ch;
+    font-size: 1.05rem;
+  }
 </style>
