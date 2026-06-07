@@ -1,4 +1,5 @@
-:root {
+:root,
+:root[data-theme="dark"] {
 	color-scheme: dark;
 	--main-bg: rgb(27, 27, 30);
 	--surface-color: #1e1e1e;
@@ -12,6 +13,31 @@
 	--blockquote-border-color: rgb(66, 66, 66);
 	--blockquote-text-color: #868686;
 	--link-color: rgba(138, 180, 248, 0.82);
+	--link-hover-color: rgba(138, 180, 248, 0.94);
+	--code-bg: rgba(0, 0, 0, 0.278);
+	--code-color: #b85618;
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+	--main-bg: #fbfbfa;
+	--surface-color: #ffffff;
+	--border-color: #dcdcdc;
+	--text-color: #33373b;
+	--text-muted-color: #6b6f73;
+	--text-muted-hightlight-color: #4a4e52;
+	--text-muted-highlight-color: #4a4e52;
+	--heading-color: #1f2226;
+	--label-color: #565a5e;
+	--blockquote-border-color: #dcdcdc;
+	--blockquote-text-color: #6b6f73;
+	--link-color: rgba(40, 103, 209, 0.95);
+	--link-hover-color: rgba(28, 84, 180, 1);
+	--code-bg: rgba(0, 0, 0, 0.06);
+	--code-color: #b0470f;
+}
+
+:root {
 	--max-width: 52rem;
 	--font-family-base: "Source Sans Pro", "Microsoft Yahei", sans-serif;
 	--font-family-heading: Lato, "Microsoft Yahei", sans-serif;
@@ -50,6 +76,9 @@ body {
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
 		env(safe-area-inset-left);
 	color: var(--text-color);
+	transition:
+		background-color 0.25s ease,
+		color 0.25s ease;
 }
 
 img,
@@ -83,7 +112,7 @@ a {
 }
 
 a:hover {
-	color: rgba(138, 180, 248, 0.94);
+	color: var(--link-hover-color);
 	text-decoration-thickness: 1px;
 	text-decoration-color: color-mix(in srgb, var(--link-color) 88%, transparent);
 }
@@ -109,8 +138,8 @@ code {
   /* em so inline code scales with surrounding text (e.g. .post-content at 1.5rem) */
   font-size: 0.85em;
   padding: 0.15em 0.15em;
-  background: rgba(0, 0, 0, 0.278);
-  color: #b85618;
+  background: var(--code-bg);
+  color: var(--code-color);
   border-radius: 0.22em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;

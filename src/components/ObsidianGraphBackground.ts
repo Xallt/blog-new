@@ -51,7 +51,8 @@ export const DEFAULT_GRAPH_PARAMS: GraphSimParams = {
 	warmupTicks: 40,
 };
 
-const BG = "rgb(27, 27, 30)";
+// Transparent so the page background (theme-aware) shows through.
+const BG = "rgba(0, 0, 0, 0)";
 const NODE_RGB = "130, 145, 170";
 /** Muted RGB triples for `type` from Obsidian frontmatter (export.py). */
 const NODE_RGB_BY_TYPE: Record<string, string> = {
